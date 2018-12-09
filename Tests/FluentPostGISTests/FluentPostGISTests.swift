@@ -41,6 +41,7 @@ final class FluentPostGISTests: XCTestCase {
             var location: PostGISPoint?
         }
         let conn = try benchmarker.pool.requestConnection().wait()
+        conn.logger = DatabaseLogger(database: .psql, handler: PrintLogHandler())
         defer { benchmarker.pool.releaseConnection(conn) }
         
         try User.prepare(on: conn).wait()
@@ -52,5 +53,9 @@ final class FluentPostGISTests: XCTestCase {
         
         let fetched = try User.find(1, on: conn).wait()
         XCTAssertEqual(fetched?.location, point)
+        
+        let all = try User.query(on: conn).filterDistance(\User.location, user.location!, .lessThanOrEqual, 1000).all().wait()
+        print(all)
+        XCTAssertEqual(all.count, 1)
     }
 }
