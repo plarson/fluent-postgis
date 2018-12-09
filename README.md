@@ -5,7 +5,7 @@
 ![Package Managers](https://img.shields.io/badge/package%20managers-SwiftPM-yellow.svg)
 [![Twitter dizm](https://img.shields.io/badge/twitter-dizm-green.svg)](http://twitter.com/dizm)
 
-Experimental PostGIS support for [FluentPostgreSQL](https://github.com/vapor/fluent-postgresql)
+Experimental (WIP) PostGIS support for [FluentPostgreSQL](https://github.com/vapor/fluent-postgresql)
 
 # Installation
 
