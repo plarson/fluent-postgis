@@ -12,7 +12,7 @@ Experimental PostGIS support for [FluentPostgreSQL](https://github.com/vapor/flu
 ## Swift Package Manager
 
 ```swift
-.Package(url: "https://github.com/plarson/FluentPostGIS.git", .branch("master"))
+.package(url: "https://github.com/plarson/FluentPostGIS.git", .branch("master"))
 ```
 
 :gift_heart: Contributing
