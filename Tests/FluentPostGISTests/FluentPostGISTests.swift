@@ -12,12 +12,7 @@ final class FluentPostGISTests: XCTestCase {
     var database: PostgreSQLDatabase!
     
     override func setUp() {
-        #if os(macOS)
         let hostname = "localhost"
-        #else
-        let hostname = "psql"
-        #endif
-        
         let config: PostgreSQLDatabaseConfig = .init(
             hostname: hostname,
             port: 5432,
