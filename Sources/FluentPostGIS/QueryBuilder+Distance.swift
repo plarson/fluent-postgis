@@ -1,4 +1,5 @@
 import FluentPostgreSQL
+import WKCodable
 
 extension QueryBuilder where
     Database: QuerySupporting,
@@ -65,9 +66,8 @@ extension QuerySupporting where
 
 extension QuerySupporting where QueryFilterValue: SQLExpression {
     public static func queryFilterValuePostGISPoint(_ point: PostGISPoint) -> QueryFilterValue {
-        return .function("ST_SetSRID", [.expression(.function("ST_MakePoint", [.expression(.literal(.numeric(String(point.longitude)))),
-                                                                               .expression(.literal(.numeric(String(point.latitude))))])),
-                                        .expression(.literal(.numeric(String(FluentPostGISSrid))))])
-        
+        let encoder = WKTEncoder()
+        let geometryText = encoder.encode(point.wkbPoint)
+        return .function("ST_GeomFromEWKT", [.expression(.literal(.string(geometryText)))])
     }
 }

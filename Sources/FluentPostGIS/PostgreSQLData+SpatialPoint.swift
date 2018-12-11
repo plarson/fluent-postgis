@@ -21,6 +21,10 @@ public struct PostGISPoint: Codable, Equatable {
         self.longitude = longitude
         self.latitude = latitude
     }
+    
+    internal var wkbPoint: WKBPoint {
+        return WKBPoint(vector: [self.longitude, self.latitude], srid: FluentPostGISSrid)
+    }
 }
 
 extension PostGISPoint: CustomStringConvertible {
@@ -42,7 +46,7 @@ extension PostGISPoint: PostgreSQLDataConvertible {
 
     public func convertToPostgreSQLData() throws -> PostgreSQLData {
         let encoder = WKBEncoder(byteOrder: .littleEndian)
-        let data = try encoder.encode(WKBPoint(vector: [self.longitude, self.latitude], srid: FluentPostGISSrid))
+        let data = try encoder.encode(wkbPoint)
         return PostgreSQLData(.geometry, binary: data)
     }
 }
