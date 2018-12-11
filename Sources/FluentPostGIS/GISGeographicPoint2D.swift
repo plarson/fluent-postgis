@@ -22,7 +22,7 @@ public struct GISGeographicPoint2D: Codable, Equatable, GISGeometry {
 
 extension GISGeographicPoint2D: CustomStringConvertible {
     public var description: String {
-        return "(\(longitude),\(latitude))"
+        return WKTEncoder().encode(wkbGeometry)
     }
 }
 

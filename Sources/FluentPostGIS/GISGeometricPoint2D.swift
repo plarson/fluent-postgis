@@ -15,6 +15,10 @@ public struct GISGeometricPoint2D: Codable, Equatable, GISGeometry {
         self.y = y
     }
     
+    public static func from(_ point: WKBPoint) -> GISGeometricPoint2D {
+        return .init(x: point.x, y: point.y)
+    }
+    
     public var wkbGeometry: WKBGeometry {
         return WKBPoint(vector: [self.x, self.y], srid: FluentPostGISSrid)
     }
@@ -22,7 +26,7 @@ public struct GISGeometricPoint2D: Codable, Equatable, GISGeometry {
 
 extension GISGeometricPoint2D: CustomStringConvertible {
     public var description: String {
-        return "(\(x),\(y))"
+        return WKTEncoder().encode(wkbGeometry)
     }
 }
 
@@ -30,8 +34,8 @@ extension GISGeometricPoint2D: PostgreSQLDataConvertible {
     public static func convertFromPostgreSQLData(_ data: PostgreSQLData) throws -> GISGeometricPoint2D {
         if let value = data.binary {
             let decoder = WKBDecoder()
-            let point = try decoder.decode(from: value) as! WKBPoint
-            return .init(x: point.x, y: point.y)
+            let geometry = try decoder.decode(from: value) as! WKBPoint
+            return .from(geometry)
         } else {
             throw PostGISError.decode(self, from: data)
         }
