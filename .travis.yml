@@ -16,7 +16,7 @@ matrix:
         - curl https://swift.org/builds/$SWIFT_BRANCH/ubuntu1404/$SWIFT_VERSION/$SWIFT_VERSION-ubuntu14.04.tar.gz -s | tar xz -C swift &> /dev/null
         - export PATH="$(pwd)/swift/$SWIFT_VERSION-ubuntu14.04/usr/bin:$PATH"
       before_script:
-        - psql -c 'create database postgis_test;' -U postgres
+        - psql -c 'create database postgis_tests;' -U postgres
       script:
         - swift package update
         - swift test
@@ -25,12 +25,14 @@ matrix:
       osx_image: xcode10
       language: swift
       sudo: required
+      addons:
+        postgresql: "9.5"
       install:
         - wget https://swift.org/builds/$SWIFT_BRANCH/xcode/$SWIFT_VERSION/$SWIFT_VERSION-osx.pkg
         - sudo installer -pkg $SWIFT_VERSION-osx.pkg -target /
         - export PATH="/Library/Developer/Toolchains/$SWIFT_VERSION.xctoolchain/usr/bin:$PATH"
       before_script:
-        - psql -c 'create database postgis_test;' -U postgres
+        - psql -c 'create database postgis_tests;' -U postgres
       script:
         - swift package update
         - swift test
