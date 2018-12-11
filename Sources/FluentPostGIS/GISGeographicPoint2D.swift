@@ -47,7 +47,7 @@ extension GISGeographicPoint2D: PostgreSQLDataConvertible {
 extension GISGeographicPoint2D: PostgreSQLDataTypeStaticRepresentable, ReflectionDecodable {
     
     /// See `PostgreSQLDataTypeStaticRepresentable`.
-    public static var postgreSQLDataType: PostgreSQLDataType { return .geometricPoint }
+    public static var postgreSQLDataType: PostgreSQLDataType { return .geographicPoint }
     
     /// See `ReflectionDecodable`.
     public static func reflectDecoded() throws -> (GISGeographicPoint2D, GISGeographicPoint2D) {

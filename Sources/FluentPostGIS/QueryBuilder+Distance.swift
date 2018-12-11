@@ -58,9 +58,7 @@ extension QuerySupporting where
             GenericSQLFunctionArgument<PostgreSQLExpression>.expression(PostgreSQLExpression.column(field as! PostgreSQLColumnIdentifier)),
             GenericSQLFunctionArgument<PostgreSQLExpression>.expression(filter as! PostgreSQLExpression),
         ] as! [QueryFilter.Function.Argument]
-        return .binary(.function("ST_Distance", args),
-                       method,
-                       value)
+        return .binary(.function("ST_Distance", args), method, value)
     }
 }
 
