@@ -18,6 +18,9 @@ public final class FluentPostGISProvider: Provider {
             var typname: String
             var oid: Int32
         }
+        struct PGVersion: Codable {
+            var version: String
+        }
         return EnablePostGISMigration.prepare(on: conn).then {
             return conn.raw("select oid, typname from pg_type where typname IN ('geometry', 'geography')")
                 .all(decoding: PGType.self)
@@ -34,7 +37,16 @@ public final class FluentPostGISProvider: Provider {
                         default: break
                         }
                     }
-            }
+                }.then {
+                    return conn.raw("SELECT PostGIS_Version() as version")
+                        .all(decoding: PGVersion.self)
+                        .map { rows in
+                            guard rows.count > 0 else {
+                                fatalError("PostGIS is not available")
+                            }
+                            PostGISVersion = rows.first?.version
+                    }
+                }
         }
     }
     
@@ -43,4 +55,5 @@ public final class FluentPostGISProvider: Provider {
     }
 }
 
+public var PostGISVersion: String?
 public var FluentPostGISSrid: UInt = 4326
