@@ -25,7 +25,7 @@ Add to ```configure.swift```
 try services.register(FluentPostGISProvider())
 ```
 # Models
-Add ```PostGISPoint``` to your models
+Add ```GISGeographicPoint2D``` to your models
 ```swift
 final class User: PostgreSQLModel {
     var id: Int?
@@ -33,6 +33,12 @@ final class User: PostgreSQLModel {
     var location: GISGeographicPoint2D?
 }
 ```
+| Geometric Types | Geographic Types  |
+|---|---|
+|GISGeometricPoint2D|GISGeographicPoint2D|
+|GISGeometricLineString2D|GISGeographicLineString2D|
+|GISGeometricPolygon2D|GISGeographicPolygon2D|
+
 # Filtering
 Query locations using ```ST_Distance```
 ```swift        
