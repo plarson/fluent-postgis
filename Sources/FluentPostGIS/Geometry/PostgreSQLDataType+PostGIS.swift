@@ -33,4 +33,20 @@ extension PostgreSQLDataType {
     public static var geographicMultiPoint: PostgreSQLDataType {
         return .custom("geography(MultiPoint, \(FluentPostGISSrid))")
     }
+    
+    public static var geometricMultiLineString: PostgreSQLDataType {
+        return .custom("geometry(MultiLineString, \(FluentPostGISSrid))")
+    }
+    
+    public static var geographicMultiLineString: PostgreSQLDataType {
+        return .custom("geography(MultiLineString, \(FluentPostGISSrid))")
+    }
+    
+    public static var geometricMultiPolygon: PostgreSQLDataType {
+        return .custom("geometry(MultiPolygon, \(FluentPostGISSrid))")
+    }
+    
+    public static var geographicMultiPolygon: PostgreSQLDataType {
+        return .custom("geography(MultiPolygon, \(FluentPostGISSrid))")
+    }
 }

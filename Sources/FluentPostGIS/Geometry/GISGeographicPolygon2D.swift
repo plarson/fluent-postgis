@@ -7,6 +7,10 @@ public struct GISGeographicPolygon2D: Codable, Equatable, GISGeometry {
     public let exteriorRing: GISGeographicLineString2D
     public let interiorRings: [GISGeographicLineString2D]
     
+    public init(exteriorRing: GISGeographicLineString2D) {
+        self.init(exteriorRing: exteriorRing, interiorRings: [])
+    }
+    
     /// Create a new `GISGeographicPolygon2D`
     public init(exteriorRing: GISGeographicLineString2D, interiorRings: [GISGeographicLineString2D]) {
         self.exteriorRing = exteriorRing
