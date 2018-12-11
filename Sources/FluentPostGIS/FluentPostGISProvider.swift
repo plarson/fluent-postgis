@@ -26,10 +26,12 @@ public final class FluentPostGISProvider: Provider {
                         fatalError("PostGIS is not available")
                     }
                     rows.forEach {
-                        if $0.typname == "geometry" {
+                        switch $0.typname {
+                        case "geometry":
                             PostgreSQLDataFormat.geometry = PostgreSQLDataFormat($0.oid)
-                        } else if $0.typname == "geography" {
+                        case "geography":
                             PostgreSQLDataFormat.geography = PostgreSQLDataFormat($0.oid)
+                        default: break
                         }
                     }
             }

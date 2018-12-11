@@ -30,13 +30,13 @@ Add ```PostGISPoint``` to your models
 final class User: PostgreSQLModel {
     var id: Int?
     var name: String
-    var location: PostGISPoint?
+    var location: GISGeographicPoint2D?
 }
 ```
 # Filtering
 Query locations using ```ST_Distance```
 ```swift        
-let searchLocation = PostGISPoint(longitude: -71.060316, latitude: 48.432044)
+let searchLocation = GISGeographicPoint2D(longitude: -71.060316, latitude: 48.432044)
 try User.query(on: conn).filterDistance(\User.location, searchLocation, .lessThanOrEqual, 1000).all().wait()
 ```
 :gift_heart: Contributing

@@ -38,7 +38,7 @@ final class FluentPostGISTests: XCTestCase {
             static let entity = "users"
             var id: Int?
             var name: String
-            var location: PostGISPoint?
+            var location: GISGeographicPoint2D?
         }
         let conn = try benchmarker.pool.requestConnection().wait()
         conn.logger = DatabaseLogger(database: .psql, handler: PrintLogHandler())
@@ -47,7 +47,7 @@ final class FluentPostGISTests: XCTestCase {
         try User.prepare(on: conn).wait()
         defer { try! User.revert(on: conn).wait() }
         
-        let point = PostGISPoint(longitude: -71.060316, latitude: 48.432044)
+        let point = GISGeographicPoint2D(longitude: -71.060316, latitude: 48.432044)
         var user = User(id: nil, name: "Tanner", location: point)
         user = try user.save(on: conn).wait()
         

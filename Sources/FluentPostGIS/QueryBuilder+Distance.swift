@@ -9,16 +9,16 @@ extension QueryBuilder where
     Database.QueryFilterValue == Database.QueryFilter
 {
     @discardableResult
-    public func filter<T>(_ key: KeyPath<Result, T>, _ filter: PostGISPoint, _ method: Database.QueryFilterMethod, _ value: Double) -> Self
+    public func filter<T>(_ key: KeyPath<Result, T>, _ filter: GISGeometry, _ method: Database.QueryFilterMethod, _ value: Double) -> Self
         where T: Encodable
     {
-        return filterDistance(Database.queryField(.keyPath(key)), Database.queryFilterValuePostGISPoint(filter), method, Database.queryFilterValue([value]))
+        return filterDistance(Database.queryField(.keyPath(key)), Database.queryFilterValueGISGeometry(filter), method, Database.queryFilterValue([value]))
     }
     
     @discardableResult
-    public func filterDistance<A, T>(_ key: KeyPath<A, T>, _ filter: PostGISPoint, _ method: Database.QueryFilterMethod, _ value: Double) -> Self
+    public func filterDistance<A, T>(_ key: KeyPath<A, T>, _ filter: GISGeometry, _ method: Database.QueryFilterMethod, _ value: Double) -> Self
     {
-        return filterDistance(Database.queryField(.keyPath(key)), Database.queryFilterValuePostGISPoint(filter), method, Database.queryFilterValue([value]))
+        return filterDistance(Database.queryField(.keyPath(key)), Database.queryFilterValueGISGeometry(filter), method, Database.queryFilterValue([value]))
     }
     
     @discardableResult
@@ -65,8 +65,8 @@ extension QuerySupporting where
 }
 
 extension QuerySupporting where QueryFilterValue: SQLExpression {
-    public static func queryFilterValuePostGISPoint(_ point: PostGISPoint) -> QueryFilterValue {
-        let geometryText = WKTEncoder().encode(point.wkbPoint)
+    public static func queryFilterValueGISGeometry(_ point: GISGeometry) -> QueryFilterValue {
+        let geometryText = WKTEncoder().encode(point.wkbGeometry)
         return .function("ST_GeomFromEWKT", [.expression(.literal(.string(geometryText)))])
     }
 }
