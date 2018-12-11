@@ -11,7 +11,7 @@ PostGIS support for [FluentPostgreSQL](https://github.com/vapor/fluent-postgresq
 ## Swift Package Manager
 
 ```swift
-.package(url: "https://github.com/plarson/fluent-postgis.git", from: "0.1.0")
+.package(url: "https://github.com/plarson/fluent-postgis.git", from: "0.1.1")
 ```
 # Setup
 Import module
