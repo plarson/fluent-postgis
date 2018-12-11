@@ -1,6 +1,6 @@
 import FluentPostgreSQL
 
-// Adds Fluent PostGIS's to your project.
+// Adds Fluent PostGIS to your project.
 public final class FluentPostGISProvider: Provider {
     public init() {}
     

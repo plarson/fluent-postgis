@@ -1,10 +1,3 @@
-//
-//  PostGISDataTypeStaticRepresentable.swift
-//  App
-//
-//  Created by Phil Larson on 11/30/18.
-//
-
 import PostgreSQL
 
 extension PostGISPoint: PostgreSQLDataTypeStaticRepresentable, ReflectionDecodable {
