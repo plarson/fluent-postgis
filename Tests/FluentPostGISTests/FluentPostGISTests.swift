@@ -39,7 +39,8 @@ final class FluentPostGISTests: XCTestCase {
             var id: Int?
             var name: String
             var location: GISGeometricPoint2D?
-            var lineString: GISGeometricLineString2D?
+            var path: GISGeometricLineString2D?
+            var polygon: GISGeometricPolygon2D?
         }
         let conn = try benchmarker.pool.requestConnection().wait()
         conn.logger = DatabaseLogger(database: .psql, handler: PrintLogHandler())
@@ -50,8 +51,12 @@ final class FluentPostGISTests: XCTestCase {
         
         let point = GISGeometricPoint2D(x: -71.060316, y: 48.432044)
         let point2 = GISGeometricPoint2D(x: -71.060316, y: 49.432044)
-        let lineString = GISGeometricLineString2D(points: [point, point2])
-        var user = User(id: nil, name: "Tanner", location: point, lineString: lineString)
+        let point3 = GISGeometricPoint2D(x: -72.060316, y: 48.432044)
+        let lineString = GISGeometricLineString2D(points: [point, point2, point3, point])
+        
+        let polygon = GISGeometricPolygon2D(exteriorRing: lineString, interiorRings: [])
+        
+        var user = User(id: nil, name: "Tanner", location: point, path: lineString, polygon: polygon)
         user = try user.save(on: conn).wait()
         
         let fetched = try User.find(1, on: conn).wait()
