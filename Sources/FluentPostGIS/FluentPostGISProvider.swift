@@ -15,14 +15,23 @@ public final class FluentPostGISProvider: Provider {
     
     public static func _setup(on conn: PostgreSQLConnection) -> Future<Void> {
         struct PGType: Codable {
+            var typname: String
             var oid: Int32
         }
         return EnablePostGISMigration.prepare(on: conn).then {
-            return conn.raw("select oid from pg_type where typname = 'geometry'").all(decoding: PGType.self).map { rows in
-                guard let oid = rows.first?.oid else {
-                    fatalError("PostGIS not enabled")
-                }
-                PostgreSQLDataFormat.geometry = PostgreSQLDataFormat(oid)
+            return conn.raw("select oid, typname from pg_type where typname IN ('geometry', 'geography')")
+                .all(decoding: PGType.self)
+                .map { rows in
+                    guard rows.count > 0 else {
+                        fatalError("PostGIS is not available")
+                    }
+                    rows.forEach {
+                        if $0.typname == "geometry" {
+                            PostgreSQLDataFormat.geometry = PostgreSQLDataFormat($0.oid)
+                        } else if $0.typname == "geography" {
+                            PostgreSQLDataFormat.geography = PostgreSQLDataFormat($0.oid)
+                        }
+                    }
             }
         }
     }
