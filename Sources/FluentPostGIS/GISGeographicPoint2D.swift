@@ -15,6 +15,10 @@ public struct GISGeographicPoint2D: Codable, Equatable, GISGeometry {
         self.latitude = latitude
     }
     
+    public static func from(_ point: WKBPoint) -> GISGeographicPoint2D {
+        return .init(longitude: point.x, latitude: point.y)
+    }
+    
     public var wkbGeometry: WKBGeometry {
         return WKBPoint(vector: [self.longitude, self.latitude], srid: FluentPostGISSrid)
     }
@@ -31,7 +35,7 @@ extension GISGeographicPoint2D: PostgreSQLDataConvertible {
         if let value = data.binary {
             let decoder = WKBDecoder()
             let point = try decoder.decode(from: value) as! WKBPoint
-            return .init(longitude: point.x, latitude: point.y)
+            return .from(point)
         } else {
             throw PostGISError.decode(self, from: data)
         }
