@@ -14,7 +14,31 @@ Experimental (WIP) PostGIS support for [FluentPostgreSQL](https://github.com/vap
 ```swift
 .package(url: "https://github.com/plarson/fluent-postgis.git", .branch("master"))
 ```
+# Setup
+Import module
+```swift
+import FluentPostGIS
+```
 
+Add to ```configure.swift```
+```swift
+try services.register(FluentPostGISProvider())
+```
+# Models
+Add ```PostGISPoint``` to your models
+```swift
+final class User: PostgreSQLModel {
+    var id: Int?
+    var name: String
+    var location: PostGISPoint?
+}
+```
+# Filtering
+Query locations using ```ST_Distance```
+```        
+let searchLocation = PostGISPoint(longitude: -71.060316, latitude: 48.432044)
+try User.query(on: conn).filterDistance(\User.location, searchLocation, .lessThanOrEqual, 1000).all().wait()
+```
 :gift_heart: Contributing
 ------------
 Please create an issue with a description of your problem or open a pull request with a fix.
