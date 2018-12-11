@@ -21,7 +21,7 @@ final class FluentPostGISTests: XCTestCase {
         let config: PostgreSQLDatabaseConfig = .init(
             hostname: hostname,
             port: 5432,
-            username: "plarson",
+            username: "postgres",
             database: "postgis_tests"
         )
         database = PostgreSQLDatabase(config: config)
@@ -108,7 +108,7 @@ final class FluentPostGISTests: XCTestCase {
     }
     
     func testGeometryCollection() throws {
-        struct UserArea: PostgreSQLModel, Migration {
+        struct UserCollection: PostgreSQLModel, Migration {
             var id: Int?
             var collection: GISGeometricGeometryCollection2D
         }
@@ -116,8 +116,8 @@ final class FluentPostGISTests: XCTestCase {
         conn.logger = DatabaseLogger(database: .psql, handler: PrintLogHandler())
         defer { benchmarker.pool.releaseConnection(conn) }
         
-        try UserArea.prepare(on: conn).wait()
-        defer { try! UserArea.revert(on: conn).wait() }
+        try UserCollection.prepare(on: conn).wait()
+        defer { try! UserCollection.revert(on: conn).wait() }
         
         let point = GISGeometricPoint2D(x: 1, y: 2)
         let point2 = GISGeometricPoint2D(x: 2, y: 3)
@@ -126,10 +126,10 @@ final class FluentPostGISTests: XCTestCase {
         let polygon = GISGeometricPolygon2D(exteriorRing: lineString, interiorRings: [lineString, lineString])
         let geometryCollection = GISGeometricGeometryCollection2D(geometries: [point, point2, point3, lineString, polygon])
 
-        var user = UserArea(id: nil, collection: geometryCollection)
+        var user = UserCollection(id: nil, collection: geometryCollection)
         user = try user.save(on: conn).wait()
         
-        let fetched = try UserArea.find(1, on: conn).wait()
+        let fetched = try UserCollection.find(1, on: conn).wait()
         XCTAssertEqual(fetched?.collection, geometryCollection)
     }
 }
