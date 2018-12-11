@@ -48,6 +48,9 @@ Query locations using ```ST_Distance```
 let searchLocation = GISGeographicPoint2D(longitude: -71.060316, latitude: 48.432044)
 try User.query(on: conn).filterDistance(\User.location, searchLocation, .lessThanOrEqual, 1000).all().wait()
 ```
+# Todo
+* More filtering functions
+
 :gift_heart: Contributing
 ------------
 Please create an issue with a description of your problem or open a pull request with a fix.
