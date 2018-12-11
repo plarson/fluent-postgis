@@ -17,7 +17,7 @@ let package = Package(
         .package(url: "https://github.com/vapor/fluent-postgresql.git", from: "1.0.0"),
 
         // Well Known Binary Encoding and Decoding
-        .package(url: "https://github.com/plarson/WKCodable", .branch("master")),
+        .package(url: "https://github.com/plarson/WKCodable", from: "0.1.0"),
     ],
     targets: [
         .target(
