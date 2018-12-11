@@ -17,12 +17,13 @@ public final class FluentPostGISProvider: Provider {
         struct PGType: Codable {
             var oid: Int32
         }
-        try! EnablePostGISMigration.prepare(on: conn).wait()
-        return conn.raw("select oid from pg_type where typname = 'geometry'").all(decoding: PGType.self).map { rows in
-            guard let oid = rows.first?.oid else {
-                fatalError("PostGIS not enabled")
+        return EnablePostGISMigration.prepare(on: conn).then {
+            return conn.raw("select oid from pg_type where typname = 'geometry'").all(decoding: PGType.self).map { rows in
+                guard let oid = rows.first?.oid else {
+                    fatalError("PostGIS not enabled")
+                }
+                PostgreSQLDataFormat.geometry = PostgreSQLDataFormat(oid)
             }
-            PostgreSQLDataFormat.geometry = PostgreSQLDataFormat(oid)
         }
     }
     

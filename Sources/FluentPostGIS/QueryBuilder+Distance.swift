@@ -66,8 +66,7 @@ extension QuerySupporting where
 
 extension QuerySupporting where QueryFilterValue: SQLExpression {
     public static func queryFilterValuePostGISPoint(_ point: PostGISPoint) -> QueryFilterValue {
-        let encoder = WKTEncoder()
-        let geometryText = encoder.encode(point.wkbPoint)
+        let geometryText = WKTEncoder().encode(point.wkbPoint)
         return .function("ST_GeomFromEWKT", [.expression(.literal(.string(geometryText)))])
     }
 }
