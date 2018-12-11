@@ -25,4 +25,12 @@ extension PostgreSQLDataType {
     public static var geographicPolygon: PostgreSQLDataType {
         return .custom("geography(Polygon, \(FluentPostGISSrid))")
     }
+    
+    public static var geometricMultiPoint: PostgreSQLDataType {
+        return .custom("geometry(MultiPoint, \(FluentPostGISSrid))")
+    }
+    
+    public static var geographicMultiPoint: PostgreSQLDataType {
+        return .custom("geography(MultiPoint, \(FluentPostGISSrid))")
+    }
 }
