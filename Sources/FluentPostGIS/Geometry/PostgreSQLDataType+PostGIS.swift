@@ -49,4 +49,12 @@ extension PostgreSQLDataType {
     public static var geographicMultiPolygon: PostgreSQLDataType {
         return .custom("geography(MultiPolygon, \(FluentPostGISSrid))")
     }
+    
+    public static var geometricGeometryCollection: PostgreSQLDataType {
+        return .custom("geometry(GeometryCollection, \(FluentPostGISSrid))")
+    }
+    
+    public static var geographicGeometryCollection: PostgreSQLDataType {
+        return .custom("geography(GeometryCollection, \(FluentPostGISSrid))")
+    }
 }

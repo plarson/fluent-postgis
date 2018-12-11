@@ -11,9 +11,9 @@ public struct GISGeographicMultiPolygon2D: Codable, Equatable, GISGeometry {
         self.polygons = polygons
     }
     
-    public static func from(_ polygon: WKBMultiPolygon) -> GISGeographicMultiPolygon2D {
-        let polygons = polygon.polygons.map { GISGeographicPolygon2D.from($0) }
-        return GISGeographicMultiPolygon2D(polygons: polygons)
+    public init(wkbGeometry polygon: WKBMultiPolygon) {
+        let polygons = polygon.polygons.map { GISGeographicPolygon2D(wkbGeometry: $0) }
+        self.init(polygons: polygons)
     }
     
     public var wkbGeometry: WKBGeometry {
@@ -33,7 +33,7 @@ extension GISGeographicMultiPolygon2D: PostgreSQLDataConvertible {
         if let value = data.binary {
             let decoder = WKBDecoder()
             let geometry = try decoder.decode(from: value) as! WKBMultiPolygon
-            return .from(geometry)
+            return self.init(wkbGeometry: geometry)
         } else {
             throw PostGISError.decode(self, from: data)
         }

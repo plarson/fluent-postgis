@@ -17,10 +17,10 @@ public struct GISGeometricPolygon2D: Codable, Equatable, GISGeometry {
         self.interiorRings = interiorRings
     }
 
-    public static func from(_ polygon: WKBPolygon) -> GISGeometricPolygon2D {
-        let exteriorRing = GISGeometricLineString2D.from(polygon.exteriorRing)
-        let interiorRings = polygon.interiorRings.map { GISGeometricLineString2D.from($0) }
-        return GISGeometricPolygon2D(exteriorRing: exteriorRing, interiorRings: interiorRings)
+    public init(wkbGeometry polygon: WKBPolygon) {
+        let exteriorRing = GISGeometricLineString2D(wkbGeometry: polygon.exteriorRing)
+        let interiorRings = polygon.interiorRings.map { GISGeometricLineString2D(wkbGeometry: $0) }
+        self.init(exteriorRing: exteriorRing, interiorRings: interiorRings)
     }
 
     public var wkbGeometry: WKBGeometry {
@@ -41,7 +41,7 @@ extension GISGeometricPolygon2D: PostgreSQLDataConvertible {
         if let value = data.binary {
             let decoder = WKBDecoder()
             let geometry = try decoder.decode(from: value) as! WKBPolygon
-            return .from(geometry)
+            return self.init(wkbGeometry: geometry)
         } else {
             throw PostGISError.decode(self, from: data)
         }

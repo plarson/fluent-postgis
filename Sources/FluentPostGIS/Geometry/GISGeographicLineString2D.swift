@@ -11,9 +11,9 @@ public struct GISGeographicLineString2D: Codable, Equatable, GISGeometry {
         self.points = points
     }
     
-    public static func from(_ lineString: WKBLineString) -> GISGeographicLineString2D {
-        let points = lineString.points.map { GISGeographicPoint2D.from($0) }
-        return GISGeographicLineString2D(points: points)
+    public init(wkbGeometry lineString: WKBLineString) {
+        let points = lineString.points.map { GISGeographicPoint2D(wkbGeometry: $0) }
+        self.init(points: points)
     }
     
     public var wkbGeometry: WKBGeometry {
@@ -32,7 +32,7 @@ extension GISGeographicLineString2D: PostgreSQLDataConvertible {
         if let value = data.binary {
             let decoder = WKBDecoder()
             let geometry = try decoder.decode(from: value) as! WKBLineString
-            return .from(geometry)
+            return self.init(wkbGeometry: geometry)
         } else {
             throw PostGISError.decode(self, from: data)
         }
