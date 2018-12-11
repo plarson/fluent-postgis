@@ -1,10 +1,3 @@
-//
-//  EnablePostGISMigration.swift
-//  App
-//
-//  Created by Phil Larson on 11/30/18.
-//
-
 import Foundation
 import FluentPostgreSQL
 
