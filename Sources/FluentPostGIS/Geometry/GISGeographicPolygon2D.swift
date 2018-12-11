@@ -58,6 +58,6 @@ extension GISGeographicPolygon2D: PostgreSQLDataTypeStaticRepresentable, Reflect
     /// See `ReflectionDecodable`.
     public static func reflectDecoded() throws -> (GISGeographicPolygon2D, GISGeographicPolygon2D) {
         return (.init(exteriorRing: GISGeographicLineString2D(points: []), interiorRings: []),
-                .init(exteriorRing: GISGeographicLineString2D(points: []), interiorRings: []))
+                .init(exteriorRing: GISGeographicLineString2D(points: [GISGeographicPoint2D(longitude: 0, latitude: 0)]), interiorRings: []))
     }
 }

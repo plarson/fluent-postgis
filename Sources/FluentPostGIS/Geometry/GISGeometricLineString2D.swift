@@ -52,6 +52,6 @@ extension GISGeometricLineString2D: PostgreSQLDataTypeStaticRepresentable, Refle
     
     /// See `ReflectionDecodable`.
     public static func reflectDecoded() throws -> (GISGeometricLineString2D, GISGeometricLineString2D) {
-        return (.init(points: []), .init(points: []))
+        return (.init(points: [GISGeometricPoint2D(x: 0, y: 0)]), .init(points: []))
     }
 }
