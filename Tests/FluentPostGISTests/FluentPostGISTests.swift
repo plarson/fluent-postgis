@@ -34,36 +34,76 @@ final class FluentPostGISTests: XCTestCase {
     }
     
     func testPoint() throws {
-        struct User: PostgreSQLModel, Migration {
-            static let entity = "users"
+        struct UserLocation: PostgreSQLModel, Migration {
             var id: Int?
-            var name: String
-            var location: GISGeometricPoint2D?
-            var path: GISGeometricLineString2D?
-            var polygon: GISGeometricPolygon2D?
+            var location: GISGeometricPoint2D
         }
         let conn = try benchmarker.pool.requestConnection().wait()
         conn.logger = DatabaseLogger(database: .psql, handler: PrintLogHandler())
         defer { benchmarker.pool.releaseConnection(conn) }
         
-        try User.prepare(on: conn).wait()
-        defer { try! User.revert(on: conn).wait() }
+        try UserLocation.prepare(on: conn).wait()
+        defer { try! UserLocation.revert(on: conn).wait() }
+        
+        let point = GISGeometricPoint2D(x: -71.060316, y: 48.432044)
+
+        var user = UserLocation(id: nil, location: point)
+        user = try user.save(on: conn).wait()
+        
+        let fetched = try UserLocation.find(1, on: conn).wait()
+        XCTAssertEqual(fetched?.location, point)
+        
+        let all = try UserLocation.query(on: conn).filterDistance(\UserLocation.location, user.location, .lessThanOrEqual, 1000).all().wait()
+        print(all)
+        XCTAssertEqual(all.count, 1)
+    }
+    
+    func testLineString() throws {
+        struct UserPath: PostgreSQLModel, Migration {
+            var id: Int?
+            var path: GISGeometricLineString2D
+        }
+        let conn = try benchmarker.pool.requestConnection().wait()
+        conn.logger = DatabaseLogger(database: .psql, handler: PrintLogHandler())
+        defer { benchmarker.pool.releaseConnection(conn) }
+        
+        try UserPath.prepare(on: conn).wait()
+        defer { try! UserPath.revert(on: conn).wait() }
         
         let point = GISGeometricPoint2D(x: -71.060316, y: 48.432044)
         let point2 = GISGeometricPoint2D(x: -71.060316, y: 49.432044)
         let point3 = GISGeometricPoint2D(x: -72.060316, y: 48.432044)
         let lineString = GISGeometricLineString2D(points: [point, point2, point3, point])
-        
-        let polygon = GISGeometricPolygon2D(exteriorRing: lineString, interiorRings: [])
-        
-        var user = User(id: nil, name: "Tanner", location: point, path: lineString, polygon: polygon)
+
+        var user = UserPath(id: nil, path: lineString)
         user = try user.save(on: conn).wait()
         
-        let fetched = try User.find(1, on: conn).wait()
-        XCTAssertEqual(fetched?.location, point)
+        let fetched = try UserPath.find(1, on: conn).wait()
+        XCTAssertEqual(fetched?.path, lineString)
+    }
+    
+    func testPolygon() throws {
+        struct UserArea: PostgreSQLModel, Migration {
+            var id: Int?
+            var area: GISGeometricPolygon2D
+        }
+        let conn = try benchmarker.pool.requestConnection().wait()
+        conn.logger = DatabaseLogger(database: .psql, handler: PrintLogHandler())
+        defer { benchmarker.pool.releaseConnection(conn) }
         
-        let all = try User.query(on: conn).filterDistance(\User.location, user.location!, .lessThanOrEqual, 1000).all().wait()
-        print(all)
-        XCTAssertEqual(all.count, 1)
+        try UserArea.prepare(on: conn).wait()
+        defer { try! UserArea.revert(on: conn).wait() }
+        
+        let point = GISGeometricPoint2D(x: -71.060316, y: 48.432044)
+        let point2 = GISGeometricPoint2D(x: -71.060316, y: 49.432044)
+        let point3 = GISGeometricPoint2D(x: -72.060316, y: 48.432044)
+        let lineString = GISGeometricLineString2D(points: [point, point2, point3, point])
+        let polygon = GISGeometricPolygon2D(exteriorRing: lineString, interiorRings: [])
+        
+        var user = UserArea(id: nil, area: polygon)
+        user = try user.save(on: conn).wait()
+        
+        let fetched = try UserArea.find(1, on: conn).wait()
+        XCTAssertEqual(fetched?.area, polygon)
     }
 }
