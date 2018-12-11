@@ -38,6 +38,8 @@ final class User: PostgreSQLModel {
 |GISGeometricLineString2D|GISGeographicLineString2D|
 |GISGeometricPolygon2D|GISGeographicPolygon2D|
 |GISGeometricMultiPoint2D|GISGeographicMultiPoint2D|
+|GISGeometricMultiLineString2D|GISGeographicMultiLineString2D|
+|GISGeometricMultiPolygon2D|GISGeographicMultiPolygon2D|
 
 # Filtering
 Query locations using ```ST_Distance```
