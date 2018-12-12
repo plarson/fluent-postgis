@@ -34,7 +34,9 @@ extension GISGeometricPoint2D: PostgreSQLDataConvertible {
     public static func convertFromPostgreSQLData(_ data: PostgreSQLData) throws -> GISGeometricPoint2D {
         if let value = data.binary {
             let decoder = WKBDecoder()
-            let geometry = try decoder.decode(from: value) as! WKBPoint
+            guard let geometry = try decoder.decode(from: value) as? WKBPoint else {
+                throw PostGISError.decode(self, from: data)
+            }
             return self.init(wkbGeometry: geometry)
         } else {
             throw PostGISError.decode(self, from: data)
