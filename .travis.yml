@@ -30,8 +30,11 @@ matrix:
         - sudo installer -pkg $SWIFT_VERSION-osx.pkg -target /
         - export PATH="/Library/Developer/Toolchains/$SWIFT_VERSION.xctoolchain/usr/bin:$PATH"
       before_script:
-        - brew services start postgresql
+        - export PG_DATA=$(brew --prefix)/var/postgres
+        - pg_ctl -w start -l postgres.log --pgdata ${PG_DATA}
+        - createuser -s postgres
         - psql -c 'create database postgis_tests;' -U postgres
+        - cat postgres.log
       script:
         - swift package update
         - swift test
