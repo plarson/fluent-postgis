@@ -8,8 +8,11 @@ matrix:
       language: generic
       dist: trusty
       sudo: required
-      services:
-        - postgresql
+      addons:
+        postgresql: 9.6
+        apt:
+          packages:
+          - postgresql-9.6-postgis-2.3
       install:
         - sudo apt-get install clang libicu-dev
         - mkdir swift
