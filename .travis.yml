@@ -29,7 +29,7 @@ matrix:
       language: swift
       sudo: required
       install:
-        - brew install libressl
+        - brew install openssl
         - wget https://swift.org/builds/$SWIFT_BRANCH/xcode/$SWIFT_VERSION/$SWIFT_VERSION-osx.pkg
         - sudo installer -pkg $SWIFT_VERSION-osx.pkg -target /
         - export PATH="/Library/Developer/Toolchains/$SWIFT_VERSION.xctoolchain/usr/bin:$PATH"
