@@ -45,38 +45,38 @@ final class FluentPostGISTests: XCTestCase {
         var user = UserLocation(id: nil, location: point)
         user = try user.save(on: conn).wait()
         
-        let fetched = try UserLocation.find(1, on: conn).wait()
-        XCTAssertEqual(fetched?.location, point)
-        
-        let all = try UserLocation.query(on: conn).filterDistance(\UserLocation.location, user.location, .lessThanOrEqual, 1000).all().wait()
-        print(all)
-        XCTAssertEqual(all.count, 1)
+//        let fetched = try UserLocation.find(1, on: conn).wait()
+//        XCTAssertEqual(fetched?.location, point)
+//        
+//        let all = try UserLocation.query(on: conn).filterDistance(\UserLocation.location, user.location, .lessThanOrEqual, 1000).all().wait()
+//        print(all)
+//        XCTAssertEqual(all.count, 1)
     }
     
-    func testLineString() throws {
-        struct UserPath: PostgreSQLModel, Migration {
-            var id: Int?
-            var path: GISGeometricLineString2D
-        }
-        let conn = try benchmarker.pool.requestConnection().wait()
-        conn.logger = DatabaseLogger(database: .psql, handler: PrintLogHandler())
-        defer { benchmarker.pool.releaseConnection(conn) }
-        
-        try UserPath.prepare(on: conn).wait()
-        defer { try! UserPath.revert(on: conn).wait() }
-        
-        let point = GISGeometricPoint2D(x: 1, y: 2)
-        let point2 = GISGeometricPoint2D(x: 2, y: 3)
-        let point3 = GISGeometricPoint2D(x: 3, y: 2)
-        let lineString = GISGeometricLineString2D(points: [point, point2, point3, point])
-
-        var user = UserPath(id: nil, path: lineString)
-        user = try user.save(on: conn).wait()
-        
-//        let fetched = try UserPath.find(1, on: conn).wait()
-//        XCTAssertEqual(fetched?.path, lineString)
-    }
-//    
+//    func testLineString() throws {
+//        struct UserPath: PostgreSQLModel, Migration {
+//            var id: Int?
+//            var path: GISGeometricLineString2D
+//        }
+//        let conn = try benchmarker.pool.requestConnection().wait()
+//        conn.logger = DatabaseLogger(database: .psql, handler: PrintLogHandler())
+//        defer { benchmarker.pool.releaseConnection(conn) }
+//
+//        try UserPath.prepare(on: conn).wait()
+//        defer { try! UserPath.revert(on: conn).wait() }
+//
+//        let point = GISGeometricPoint2D(x: 1, y: 2)
+//        let point2 = GISGeometricPoint2D(x: 2, y: 3)
+//        let point3 = GISGeometricPoint2D(x: 3, y: 2)
+//        let lineString = GISGeometricLineString2D(points: [point, point2, point3, point])
+//
+//        var user = UserPath(id: nil, path: lineString)
+//        user = try user.save(on: conn).wait()
+//
+////        let fetched = try UserPath.find(1, on: conn).wait()
+////        XCTAssertEqual(fetched?.path, lineString)
+//    }
+//
 //    func testPolygon() throws {
 //        struct UserArea: PostgreSQLModel, Migration {
 //            var id: Int?
