@@ -2,7 +2,12 @@ import XCTest
 
 extension FluentPostGISTests {
     static let __allTests = [
+        ("testContains", testContains),
+        ("testContainsWithHole", testContainsWithHole),
+        ("testGeometryCollection", testGeometryCollection),
+        ("testLineString", testLineString),
         ("testPoint", testPoint),
+        ("testPolygon", testPolygon),
     ]
 }
 

@@ -49,7 +49,6 @@ final class FluentPostGISTests: XCTestCase {
         XCTAssertEqual(fetched?.location, point)
 
         let all = try UserLocation.query(on: conn).filterGeometryDistanceWithin(\UserLocation.location, user.location, 1000).all().wait()
-        print(all)
         XCTAssertEqual(all.count, 1)
     }
     
@@ -73,8 +72,8 @@ final class FluentPostGISTests: XCTestCase {
         var user = UserPath(id: nil, path: lineString)
         user = try user.save(on: conn).wait()
 
-//        let fetched = try UserPath.find(1, on: conn).wait()
-//        XCTAssertEqual(fetched?.path, lineString)
+        let fetched = try UserPath.find(1, on: conn).wait()
+        XCTAssertEqual(fetched?.path, lineString)
     }
 
     func testPolygon() throws {
@@ -126,5 +125,70 @@ final class FluentPostGISTests: XCTestCase {
 
         let fetched = try UserCollection.find(1, on: conn).wait()
         XCTAssertEqual(fetched?.collection, geometryCollection)
+    }
+    
+    func testContains() throws {
+        struct UserArea: PostgreSQLModel, Migration {
+            var id: Int?
+            var area: GISGeometricPolygon2D
+        }
+        let conn = try benchmarker.pool.requestConnection().wait()
+        conn.logger = DatabaseLogger(database: .psql, handler: PrintLogHandler())
+        defer { benchmarker.pool.releaseConnection(conn) }
+        
+        try UserArea.prepare(on: conn).wait()
+        defer { try! UserArea.revert(on: conn).wait() }
+        
+        let point = GISGeometricPoint2D(x: 0, y: 0)
+        let point2 = GISGeometricPoint2D(x: 10, y: 0)
+        let point3 = GISGeometricPoint2D(x: 10, y: 10)
+        let point4 = GISGeometricPoint2D(x: 0, y: 10)
+        let lineString = GISGeometricLineString2D(points: [point, point2, point3, point4, point])
+        let polygon = GISGeometricPolygon2D(exteriorRing: lineString)
+        
+        var user = UserArea(id: nil, area: polygon)
+        user = try user.save(on: conn).wait()
+        
+        let testPoint = GISGeometricPoint2D(x: 5, y: 5)
+        let all = try UserArea.query(on: conn).filterGeometryContains(\UserArea.area, testPoint).all().wait()
+        XCTAssertEqual(all.count, 1)
+    }
+    
+    func testContainsWithHole() throws {
+        struct UserArea: PostgreSQLModel, Migration {
+            var id: Int?
+            var area: GISGeometricPolygon2D
+        }
+        let conn = try benchmarker.pool.requestConnection().wait()
+        conn.logger = DatabaseLogger(database: .psql, handler: PrintLogHandler())
+        defer { benchmarker.pool.releaseConnection(conn) }
+        
+        try UserArea.prepare(on: conn).wait()
+        defer { try! UserArea.revert(on: conn).wait() }
+        
+        let point = GISGeometricPoint2D(x: 0, y: 0)
+        let point2 = GISGeometricPoint2D(x: 10, y: 0)
+        let point3 = GISGeometricPoint2D(x: 10, y: 10)
+        let point4 = GISGeometricPoint2D(x: 0, y: 10)
+        let lineString = GISGeometricLineString2D(points: [point, point2, point3, point4, point])
+        
+        let holePoint = GISGeometricPoint2D(x: 2.5, y: 2.5)
+        let holePoint2 = GISGeometricPoint2D(x: 7.5, y: 2.5)
+        let holePoint3 = GISGeometricPoint2D(x: 7.5, y: 7.5)
+        let holePoint4 = GISGeometricPoint2D(x: 2.5, y: 7.5)
+        let hole = GISGeometricLineString2D(points: [holePoint, holePoint2, holePoint3, holePoint4, holePoint])
+
+        let polygon = GISGeometricPolygon2D(exteriorRing: lineString, interiorRings: [hole])
+        
+        var user = UserArea(id: nil, area: polygon)
+        user = try user.save(on: conn).wait()
+        
+        let testPoint = GISGeometricPoint2D(x: 5, y: 5)
+        let all = try UserArea.query(on: conn).filterGeometryContains(\UserArea.area, testPoint).all().wait()
+        XCTAssertEqual(all.count, 0)
+        
+        let testPoint2 = GISGeometricPoint2D(x: 1, y: 5)
+        let all2 = try UserArea.query(on: conn).filterGeometryContains(\UserArea.area, testPoint2).all().wait()
+        XCTAssertEqual(all2.count, 1)
     }
 }
