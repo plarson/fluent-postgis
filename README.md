@@ -55,6 +55,7 @@ try User.query(on: conn).filterGeometryDistance(\User.location, searchLocation, 
 |filterGeometryCrosses|
 |filterGeometryDisjoint|
 |filterGeometryDistance|
+|filterGeometryDistanceWithin|
 |filterGeometryEquals|
 |filterGeometryIntersects|
 |filterGeometryOverlaps|
