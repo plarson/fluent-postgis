@@ -42,12 +42,24 @@ final class User: PostgreSQLModel {
 |GISGeometricMultiPolygon2D|GISGeographicMultiPolygon2D|
 |GISGeometricGeometryCollection2D|GISGeographicGeometryCollection2D|
 
-# Filtering
+# Queries
 Query locations using ```ST_Distance```
 ```swift        
 let searchLocation = GISGeographicPoint2D(longitude: -71.060316, latitude: 48.432044)
 try User.query(on: conn).filterDistance(\User.location, searchLocation, .lessThanOrEqual, 1000).all().wait()
 ```
+
+| Queries |
+|---|
+|filterGeometryContains|
+|filterGeometryCrosses|
+|filterGeometryDistance|
+|filterGeometryEquals|
+|filterGeometryIntersects|
+|filterGeometryOverlaps|
+|filterGeometryTouches|
+|filterGeometryWithin|
+
 # Todo
 * More filtering functions
 
