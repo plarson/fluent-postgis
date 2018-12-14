@@ -275,4 +275,68 @@ final class QueryTests: XCTestCase {
         let all = try UserArea.query(on: conn).filterGeometryEquals(\UserArea.area, polygon).all().wait()
         XCTAssertEqual(all.count, 1)
     }
+    
+    func testIntersects() throws {
+        struct UserArea: PostgreSQLModel, Migration {
+            var id: Int?
+            var area: GISGeometricPolygon2D
+        }
+        let conn = try benchmarker.pool.requestConnection().wait()
+        conn.logger = DatabaseLogger(database: .psql, handler: PrintLogHandler())
+        defer { benchmarker.pool.releaseConnection(conn) }
+        
+        try UserArea.prepare(on: conn).wait()
+        defer { try! UserArea.revert(on: conn).wait() }
+        
+        let exteriorRing = GISGeometricLineString2D(points: [
+            GISGeometricPoint2D(x: 0, y: 0),
+            GISGeometricPoint2D(x: 10, y: 0),
+            GISGeometricPoint2D(x: 10, y: 10),
+            GISGeometricPoint2D(x: 0, y: 10),
+            GISGeometricPoint2D(x: 0, y: 0)])
+        let polygon = GISGeometricPolygon2D(exteriorRing: exteriorRing)
+        
+        let testPath = GISGeometricLineString2D(points: [
+            GISGeometricPoint2D(x: 15, y: 0),
+            GISGeometricPoint2D(x: 5, y: 5)
+            ])
+        
+        var user = UserArea(id: nil, area: polygon)
+        user = try user.save(on: conn).wait()
+        
+        let all = try UserArea.query(on: conn).filterGeometryIntersects(\UserArea.area, testPath).all().wait()
+        XCTAssertEqual(all.count, 1)
+    }
+    
+    func testIntersectsReversed() throws {
+        struct UserLocation: PostgreSQLModel, Migration {
+            var id: Int?
+            var path: GISGeometricLineString2D
+        }
+        let conn = try benchmarker.pool.requestConnection().wait()
+        conn.logger = DatabaseLogger(database: .psql, handler: PrintLogHandler())
+        defer { benchmarker.pool.releaseConnection(conn) }
+        
+        try UserLocation.prepare(on: conn).wait()
+        defer { try! UserLocation.revert(on: conn).wait() }
+        
+        let exteriorRing = GISGeometricLineString2D(points: [
+            GISGeometricPoint2D(x: 0, y: 0),
+            GISGeometricPoint2D(x: 10, y: 0),
+            GISGeometricPoint2D(x: 10, y: 10),
+            GISGeometricPoint2D(x: 0, y: 10),
+            GISGeometricPoint2D(x: 0, y: 0)])
+        let polygon = GISGeometricPolygon2D(exteriorRing: exteriorRing)
+        
+        let testPath = GISGeometricLineString2D(points: [
+            GISGeometricPoint2D(x: 15, y: 0),
+            GISGeometricPoint2D(x: 5, y: 5)
+            ])
+        
+        var user = UserLocation(id: nil, path: testPath)
+        user = try user.save(on: conn).wait()
+        
+        let all = try UserLocation.query(on: conn).filterGeometryIntersects(polygon, \UserLocation.path).all().wait()
+        XCTAssertEqual(all.count, 1)
+    }
 }
