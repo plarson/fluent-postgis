@@ -119,4 +119,62 @@ final class QueryTests: XCTestCase {
         XCTAssertEqual(all2.count, 1)
     }
     
+    func testCrosses() throws {
+        struct UserArea: PostgreSQLModel, Migration {
+            var id: Int?
+            var area: GISGeometricPolygon2D
+        }
+        let conn = try benchmarker.pool.requestConnection().wait()
+        conn.logger = DatabaseLogger(database: .psql, handler: PrintLogHandler())
+        defer { benchmarker.pool.releaseConnection(conn) }
+        
+        try UserArea.prepare(on: conn).wait()
+        defer { try! UserArea.revert(on: conn).wait() }
+        
+        let point = GISGeometricPoint2D(x: 0, y: 0)
+        let point2 = GISGeometricPoint2D(x: 10, y: 0)
+        let point3 = GISGeometricPoint2D(x: 10, y: 10)
+        let point4 = GISGeometricPoint2D(x: 0, y: 10)
+        let lineString = GISGeometricLineString2D(points: [point, point2, point3, point4, point])
+        let polygon = GISGeometricPolygon2D(exteriorRing: lineString)
+        
+        var user = UserArea(id: nil, area: polygon)
+        user = try user.save(on: conn).wait()
+        
+        let point5 = GISGeometricPoint2D(x: 15, y: 0)
+        let point6 = GISGeometricPoint2D(x: 5, y: 5)
+        let testPath = GISGeometricLineString2D(points: [point5, point6])
+        let all = try UserArea.query(on: conn).filterGeometryCrosses(\UserArea.area, testPath).all().wait()
+        XCTAssertEqual(all.count, 1)
+    }
+    
+    func testCrossesReversed() throws {
+        struct UserLocation: PostgreSQLModel, Migration {
+            var id: Int?
+            var path: GISGeometricLineString2D
+        }
+        let conn = try benchmarker.pool.requestConnection().wait()
+        conn.logger = DatabaseLogger(database: .psql, handler: PrintLogHandler())
+        defer { benchmarker.pool.releaseConnection(conn) }
+        
+        try UserLocation.prepare(on: conn).wait()
+        defer { try! UserLocation.revert(on: conn).wait() }
+        
+        let point5 = GISGeometricPoint2D(x: 15, y: 0)
+        let point6 = GISGeometricPoint2D(x: 5, y: 5)
+        let testPath = GISGeometricLineString2D(points: [point5, point6])
+        
+        let point = GISGeometricPoint2D(x: 0, y: 0)
+        let point2 = GISGeometricPoint2D(x: 10, y: 0)
+        let point3 = GISGeometricPoint2D(x: 10, y: 10)
+        let point4 = GISGeometricPoint2D(x: 0, y: 10)
+        let lineString = GISGeometricLineString2D(points: [point, point2, point3, point4, point])
+        let polygon = GISGeometricPolygon2D(exteriorRing: lineString)
+        
+        var user = UserLocation(id: nil, path: testPath)
+        user = try user.save(on: conn).wait()
+        
+        let all = try UserLocation.query(on: conn).filterGeometryCrosses(polygon, \UserLocation.path).all().wait()
+        XCTAssertEqual(all.count, 1)
+    }
 }

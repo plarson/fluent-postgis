@@ -14,6 +14,8 @@ extension QueryTests {
         ("testContains", testContains),
         ("testContainsReversed", testContainsReversed),
         ("testContainsWithHole", testContainsWithHole),
+        ("testCrosses", testCrosses),
+        ("testCrossesReversed", testCrossesReversed),
     ]
 }
 
