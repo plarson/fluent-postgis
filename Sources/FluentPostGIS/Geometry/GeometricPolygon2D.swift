@@ -2,27 +2,27 @@ import Foundation
 import PostgreSQL
 import WKCodable
 
-public struct GISGeographicPolygon2D: Codable, Equatable, GISGeometry {
+public struct GeometricPolygon2D: Codable, Equatable, PostGISGeometry {
     /// The points
-    public let exteriorRing: GISGeographicLineString2D
-    public let interiorRings: [GISGeographicLineString2D]
+    public let exteriorRing: GeometricLineString2D
+    public let interiorRings: [GeometricLineString2D]
     
-    public init(exteriorRing: GISGeographicLineString2D) {
+    public init(exteriorRing: GeometricLineString2D) {
         self.init(exteriorRing: exteriorRing, interiorRings: [])
     }
-    
-    /// Create a new `GISGeographicPolygon2D`
-    public init(exteriorRing: GISGeographicLineString2D, interiorRings: [GISGeographicLineString2D]) {
+
+    /// Create a new `GISGeometricPolygon2D`
+    public init(exteriorRing: GeometricLineString2D, interiorRings: [GeometricLineString2D]) {
         self.exteriorRing = exteriorRing
         self.interiorRings = interiorRings
     }
-    
+
     public init(wkbGeometry polygon: WKBPolygon) {
-        let exteriorRing = GISGeographicLineString2D(wkbGeometry: polygon.exteriorRing)
-        let interiorRings = polygon.interiorRings.map { GISGeographicLineString2D(wkbGeometry: $0) }
+        let exteriorRing = GeometricLineString2D(wkbGeometry: polygon.exteriorRing)
+        let interiorRings = polygon.interiorRings.map { GeometricLineString2D(wkbGeometry: $0) }
         self.init(exteriorRing: exteriorRing, interiorRings: interiorRings)
     }
-    
+
     public var wkbGeometry: WKBGeometry {
         let exteriorRing = self.exteriorRing.wkbGeometry as! WKBLineString
         let interiorRings = self.interiorRings.map { $0.wkbGeometry as! WKBLineString }
@@ -30,14 +30,14 @@ public struct GISGeographicPolygon2D: Codable, Equatable, GISGeometry {
     }
 }
 
-extension GISGeographicPolygon2D: CustomStringConvertible {
+extension GeometricPolygon2D: CustomStringConvertible {
     public var description: String {
         return WKTEncoder().encode(wkbGeometry)
     }
 }
 
-extension GISGeographicPolygon2D: PostgreSQLDataConvertible {
-    public static func convertFromPostgreSQLData(_ data: PostgreSQLData) throws -> GISGeographicPolygon2D {
+extension GeometricPolygon2D: PostgreSQLDataConvertible {
+    public static func convertFromPostgreSQLData(_ data: PostgreSQLData) throws -> GeometricPolygon2D {
         if let value = data.binary {
             let decoder = WKBDecoder()
             let geometry = try decoder.decode(from: value) as! WKBPolygon
@@ -46,7 +46,7 @@ extension GISGeographicPolygon2D: PostgreSQLDataConvertible {
             throw PostGISError.decode(self, from: data)
         }
     }
-    
+
     public func convertToPostgreSQLData() throws -> PostgreSQLData {
         let encoder = WKBEncoder(byteOrder: .littleEndian)
         let data = encoder.encode(wkbGeometry)
@@ -54,14 +54,14 @@ extension GISGeographicPolygon2D: PostgreSQLDataConvertible {
     }
 }
 
-extension GISGeographicPolygon2D: PostgreSQLDataTypeStaticRepresentable, ReflectionDecodable {
-    
+extension GeometricPolygon2D: PostgreSQLDataTypeStaticRepresentable, ReflectionDecodable {
+
     /// See `PostgreSQLDataTypeStaticRepresentable`.
-    public static var postgreSQLDataType: PostgreSQLDataType { return .geographicPolygon }
-    
+    public static var postgreSQLDataType: PostgreSQLDataType { return .geometricPolygon }
+
     /// See `ReflectionDecodable`.
-    public static func reflectDecoded() throws -> (GISGeographicPolygon2D, GISGeographicPolygon2D) {
-        return (.init(exteriorRing: GISGeographicLineString2D(points: []), interiorRings: []),
-                .init(exteriorRing: GISGeographicLineString2D(points: [GISGeographicPoint2D(longitude: 0, latitude: 0)]), interiorRings: []))
+    public static func reflectDecoded() throws -> (GeometricPolygon2D, GeometricPolygon2D) {
+        return (.init(exteriorRing: GeometricLineString2D(points: []), interiorRings: []),
+                .init(exteriorRing: GeometricLineString2D(points: [GeometricPoint2D(x: 0, y: 0)]), interiorRings: []))
     }
 }

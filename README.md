@@ -35,13 +35,13 @@ final class User: PostgreSQLModel {
 ```
 | Geometric Types | Geographic Types  |
 |---|---|
-|GISGeometricPoint2D|GISGeographicPoint2D|
-|GISGeometricLineString2D|GISGeographicLineString2D|
-|GISGeometricPolygon2D|GISGeographicPolygon2D|
-|GISGeometricMultiPoint2D|GISGeographicMultiPoint2D|
-|GISGeometricMultiLineString2D|GISGeographicMultiLineString2D|
-|GISGeometricMultiPolygon2D|GISGeographicMultiPolygon2D|
-|GISGeometricGeometryCollection2D|GISGeographicGeometryCollection2D|
+|GeometricPoint2D|GeographicPoint2D|
+|GeometricLineString2D|GeographicLineString2D|
+|GeometricPolygon2D|GeographicPolygon2D|
+|GeometricMultiPoint2D|GeographicMultiPoint2D|
+|GeometricMultiLineString2D|GeographicMultiLineString2D|
+|GeometricMultiPolygon2D|GeographicMultiPolygon2D|
+|GeometricGeometryCollection2D|GeographicGeometryCollection2D|
 
 # Queries
 Query locations using ```ST_DWithin```

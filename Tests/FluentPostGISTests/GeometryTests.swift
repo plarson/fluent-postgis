@@ -30,7 +30,7 @@ final class GeometryTests: XCTestCase {
     func testPoint() throws {
         struct UserLocation: PostgreSQLModel, Migration {
             var id: Int?
-            var location: GISGeometricPoint2D
+            var location: GeometricPoint2D
         }
         let conn = try benchmarker.pool.requestConnection().wait()
         conn.logger = DatabaseLogger(database: .psql, handler: PrintLogHandler())
@@ -39,7 +39,7 @@ final class GeometryTests: XCTestCase {
         try UserLocation.prepare(on: conn).wait()
         defer { try! UserLocation.revert(on: conn).wait() }
         
-        let point = GISGeometricPoint2D(x: 1, y: 2)
+        let point = GeometricPoint2D(x: 1, y: 2)
 
         var user = UserLocation(id: nil, location: point)
         user = try user.save(on: conn).wait()
@@ -54,7 +54,7 @@ final class GeometryTests: XCTestCase {
     func testLineString() throws {
         struct UserPath: PostgreSQLModel, Migration {
             var id: Int?
-            var path: GISGeometricLineString2D
+            var path: GeometricLineString2D
         }
         let conn = try benchmarker.pool.requestConnection().wait()
         conn.logger = DatabaseLogger(database: .psql, handler: PrintLogHandler())
@@ -63,10 +63,10 @@ final class GeometryTests: XCTestCase {
         try UserPath.prepare(on: conn).wait()
         defer { try! UserPath.revert(on: conn).wait() }
 
-        let point = GISGeometricPoint2D(x: 1, y: 2)
-        let point2 = GISGeometricPoint2D(x: 2, y: 3)
-        let point3 = GISGeometricPoint2D(x: 3, y: 2)
-        let lineString = GISGeometricLineString2D(points: [point, point2, point3, point])
+        let point = GeometricPoint2D(x: 1, y: 2)
+        let point2 = GeometricPoint2D(x: 2, y: 3)
+        let point3 = GeometricPoint2D(x: 3, y: 2)
+        let lineString = GeometricLineString2D(points: [point, point2, point3, point])
 
         var user = UserPath(id: nil, path: lineString)
         user = try user.save(on: conn).wait()
@@ -78,7 +78,7 @@ final class GeometryTests: XCTestCase {
     func testPolygon() throws {
         struct UserArea: PostgreSQLModel, Migration {
             var id: Int?
-            var area: GISGeometricPolygon2D
+            var area: GeometricPolygon2D
         }
         let conn = try benchmarker.pool.requestConnection().wait()
         conn.logger = DatabaseLogger(database: .psql, handler: PrintLogHandler())
@@ -87,11 +87,11 @@ final class GeometryTests: XCTestCase {
         try UserArea.prepare(on: conn).wait()
         defer { try! UserArea.revert(on: conn).wait() }
 
-        let point = GISGeometricPoint2D(x: 1, y: 2)
-        let point2 = GISGeometricPoint2D(x: 2, y: 3)
-        let point3 = GISGeometricPoint2D(x: 3, y: 2)
-        let lineString = GISGeometricLineString2D(points: [point, point2, point3, point])
-        let polygon = GISGeometricPolygon2D(exteriorRing: lineString, interiorRings: [lineString, lineString])
+        let point = GeometricPoint2D(x: 1, y: 2)
+        let point2 = GeometricPoint2D(x: 2, y: 3)
+        let point3 = GeometricPoint2D(x: 3, y: 2)
+        let lineString = GeometricLineString2D(points: [point, point2, point3, point])
+        let polygon = GeometricPolygon2D(exteriorRing: lineString, interiorRings: [lineString, lineString])
 
         var user = UserArea(id: nil, area: polygon)
         user = try user.save(on: conn).wait()
@@ -103,7 +103,7 @@ final class GeometryTests: XCTestCase {
     func testGeometryCollection() throws {
         struct UserCollection: PostgreSQLModel, Migration {
             var id: Int?
-            var collection: GISGeometricGeometryCollection2D
+            var collection: GeometricGeometryCollection2D
         }
         let conn = try benchmarker.pool.requestConnection().wait()
         conn.logger = DatabaseLogger(database: .psql, handler: PrintLogHandler())
@@ -112,12 +112,12 @@ final class GeometryTests: XCTestCase {
         try UserCollection.prepare(on: conn).wait()
         defer { try! UserCollection.revert(on: conn).wait() }
 
-        let point = GISGeometricPoint2D(x: 1, y: 2)
-        let point2 = GISGeometricPoint2D(x: 2, y: 3)
-        let point3 = GISGeometricPoint2D(x: 3, y: 2)
-        let lineString = GISGeometricLineString2D(points: [point, point2, point3, point])
-        let polygon = GISGeometricPolygon2D(exteriorRing: lineString, interiorRings: [lineString, lineString])
-        let geometryCollection = GISGeometricGeometryCollection2D(geometries: [point, point2, point3, lineString, polygon])
+        let point = GeometricPoint2D(x: 1, y: 2)
+        let point2 = GeometricPoint2D(x: 2, y: 3)
+        let point3 = GeometricPoint2D(x: 3, y: 2)
+        let lineString = GeometricLineString2D(points: [point, point2, point3, point])
+        let polygon = GeometricPolygon2D(exteriorRing: lineString, interiorRings: [lineString, lineString])
+        let geometryCollection = GeometricGeometryCollection2D(geometries: [point, point2, point3, lineString, polygon])
 
         var user = UserCollection(id: nil, collection: geometryCollection)
         user = try user.save(on: conn).wait()

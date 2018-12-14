@@ -2,17 +2,17 @@ import Foundation
 import PostgreSQL
 import WKCodable
 
-public struct GISGeographicMultiPoint2D: Codable, Equatable, GISGeometry {
+public struct GeometricMultiPoint2D: Codable, Equatable, PostGISGeometry {
     /// The points
-    public var points: [GISGeographicPoint2D]
+    public var points: [GeometricPoint2D]
     
-    /// Create a new `GISGeographicLineString2D`
-    public init(points: [GISGeographicPoint2D]) {
+    /// Create a new `GISGeometricLineString2D`
+    public init(points: [GeometricPoint2D]) {
         self.points = points
     }
     
     public init(wkbGeometry lineString: WKBMultiPoint) {
-        let points = lineString.points.map { GISGeographicPoint2D(wkbGeometry: $0) }
+        let points = lineString.points.map { GeometricPoint2D(wkbGeometry: $0) }
         self.init(points: points)
     }
     
@@ -21,14 +21,14 @@ public struct GISGeographicMultiPoint2D: Codable, Equatable, GISGeometry {
     }
 }
 
-extension GISGeographicMultiPoint2D: CustomStringConvertible {
+extension GeometricMultiPoint2D: CustomStringConvertible {
     public var description: String {
         return WKTEncoder().encode(wkbGeometry)
     }
 }
 
-extension GISGeographicMultiPoint2D: PostgreSQLDataConvertible {
-    public static func convertFromPostgreSQLData(_ data: PostgreSQLData) throws -> GISGeographicMultiPoint2D {
+extension GeometricMultiPoint2D: PostgreSQLDataConvertible {
+    public static func convertFromPostgreSQLData(_ data: PostgreSQLData) throws -> GeometricMultiPoint2D {
         if let value = data.binary {
             let decoder = WKBDecoder()
             let geometry = try decoder.decode(from: value) as! WKBMultiPoint
@@ -45,13 +45,13 @@ extension GISGeographicMultiPoint2D: PostgreSQLDataConvertible {
     }
 }
 
-extension GISGeographicMultiPoint2D: PostgreSQLDataTypeStaticRepresentable, ReflectionDecodable {
+extension GeometricMultiPoint2D: PostgreSQLDataTypeStaticRepresentable, ReflectionDecodable {
     
     /// See `PostgreSQLDataTypeStaticRepresentable`.
-    public static var postgreSQLDataType: PostgreSQLDataType { return .geographicMultiPoint }
+    public static var postgreSQLDataType: PostgreSQLDataType { return .geometricMultiPoint }
     
     /// See `ReflectionDecodable`.
-    public static func reflectDecoded() throws -> (GISGeographicMultiPoint2D, GISGeographicMultiPoint2D) {
-        return (.init(points: []), .init(points: [GISGeographicPoint2D(longitude: 0, latitude: 0)]))
+    public static func reflectDecoded() throws -> (GeometricMultiPoint2D, GeometricMultiPoint2D) {
+        return (.init(points: []), .init(points: [GeometricPoint2D(x: 0, y: 0)]))
     }
 }

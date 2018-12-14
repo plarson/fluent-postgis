@@ -8,22 +8,22 @@ extension QueryBuilder where
     Database.QueryFilterValue == Database.QueryFilter
 {
     @discardableResult
-    public func filterGeometryDistanceWithin<T>(_ key: KeyPath<Result, T>, _ filter: GISGeometry, _ value: Double) -> Self
-        where T: GISGeometry
+    public func filterGeometryDistanceWithin<T>(_ key: KeyPath<Result, T>, _ filter: PostGISGeometry, _ value: Double) -> Self
+        where T: PostGISGeometry
     {
         return filterGeometryDistanceWithin(Database.queryField(.keyPath(key)), Database.queryFilterValueGeometry(filter),  Database.queryFilterValue([value]))
     }
     
     @discardableResult
     public func filterGeometryDistanceWithin<T>(_ key: KeyPath<Result, T>, _ filter: Database.QueryFilterValue, _ value: Double) -> Self
-        where T: GISGeometry
+        where T: PostGISGeometry
     {
         return filterGeometryDistanceWithin(Database.queryField(.keyPath(key)), filter, Database.queryFilterValue([value]))
     }
     
     @discardableResult
     public func filterGeometryDistanceWithin<A, T>(_ key: KeyPath<A, T>, _ filter: Database.QueryFilterValue, _ value: Double) -> Self
-        where T: GISGeometry
+        where T: PostGISGeometry
     {
         return filterGeometryDistanceWithin(Database.queryField(.keyPath(key)), filter, Database.queryFilterValue([value]))
     }

@@ -18,8 +18,8 @@ extension QueryBuilder where
     ///     - value: Geometry value to filter by.
     /// - returns: Query builder for chaining.
     @discardableResult
-    public func filterGeometryEquals<T>(_ key: KeyPath<Result, T>, _ filter: GISGeometry) -> Self
-        where T: GISGeometry
+    public func filterGeometryEquals<T>(_ key: KeyPath<Result, T>, _ filter: PostGISGeometry) -> Self
+        where T: PostGISGeometry
     {
         return filterGeometryEquals(Database.queryField(.keyPath(key)), Database.queryFilterValueGeometry(filter))
     }

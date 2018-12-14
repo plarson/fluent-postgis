@@ -2,7 +2,7 @@ import Foundation
 import PostgreSQL
 import WKCodable
 
-public struct GISGeographicPoint2D: Codable, Equatable, GISGeometry {
+public struct GeographicPoint2D: Codable, Equatable, PostGISGeometry {
     /// The point's x coordinate.
     public var longitude: Double
     
@@ -24,14 +24,14 @@ public struct GISGeographicPoint2D: Codable, Equatable, GISGeometry {
     }
 }
 
-extension GISGeographicPoint2D: CustomStringConvertible {
+extension GeographicPoint2D: CustomStringConvertible {
     public var description: String {
         return WKTEncoder().encode(wkbGeometry)
     }
 }
 
-extension GISGeographicPoint2D: PostgreSQLDataConvertible {
-    public static func convertFromPostgreSQLData(_ data: PostgreSQLData) throws -> GISGeographicPoint2D {
+extension GeographicPoint2D: PostgreSQLDataConvertible {
+    public static func convertFromPostgreSQLData(_ data: PostgreSQLData) throws -> GeographicPoint2D {
         if let value = data.binary {
             let decoder = WKBDecoder()
             let point = try decoder.decode(from: value) as! WKBPoint
@@ -48,13 +48,13 @@ extension GISGeographicPoint2D: PostgreSQLDataConvertible {
     }
 }
 
-extension GISGeographicPoint2D: PostgreSQLDataTypeStaticRepresentable, ReflectionDecodable {
+extension GeographicPoint2D: PostgreSQLDataTypeStaticRepresentable, ReflectionDecodable {
     
     /// See `PostgreSQLDataTypeStaticRepresentable`.
     public static var postgreSQLDataType: PostgreSQLDataType { return .geographicPoint }
     
     /// See `ReflectionDecodable`.
-    public static func reflectDecoded() throws -> (GISGeographicPoint2D, GISGeographicPoint2D) {
+    public static func reflectDecoded() throws -> (GeographicPoint2D, GeographicPoint2D) {
         return (.init(longitude: 0, latitude: 0), .init(longitude: 1, latitude: 1))
     }
 }

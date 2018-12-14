@@ -2,17 +2,17 @@ import Foundation
 import PostgreSQL
 import WKCodable
 
-public struct GISGeographicLineString2D: Codable, Equatable, GISGeometry {
+public struct GeometricLineString2D: Codable, Equatable, PostGISGeometry {
     /// The points
-    public var points: [GISGeographicPoint2D]
+    public var points: [GeometricPoint2D]
     
-    /// Create a new `GISGeographicLineString2D`
-    public init(points: [GISGeographicPoint2D]) {
+    /// Create a new `GISGeometricLineString2D`
+    public init(points: [GeometricPoint2D]) {
         self.points = points
     }
     
     public init(wkbGeometry lineString: WKBLineString) {
-        let points = lineString.points.map { GISGeographicPoint2D(wkbGeometry: $0) }
+        let points = lineString.points.map { GeometricPoint2D(wkbGeometry: $0) }
         self.init(points: points)
     }
     
@@ -21,14 +21,14 @@ public struct GISGeographicLineString2D: Codable, Equatable, GISGeometry {
     }
 }
 
-extension GISGeographicLineString2D: CustomStringConvertible {
+extension GeometricLineString2D: CustomStringConvertible {
     public var description: String {
         return WKTEncoder().encode(wkbGeometry)
     }
 }
 
-extension GISGeographicLineString2D: PostgreSQLDataConvertible {
-    public static func convertFromPostgreSQLData(_ data: PostgreSQLData) throws -> GISGeographicLineString2D {
+extension GeometricLineString2D: PostgreSQLDataConvertible {
+    public static func convertFromPostgreSQLData(_ data: PostgreSQLData) throws -> GeometricLineString2D {
         if let value = data.binary {
             let decoder = WKBDecoder()
             let geometry = try decoder.decode(from: value) as! WKBLineString
@@ -45,13 +45,13 @@ extension GISGeographicLineString2D: PostgreSQLDataConvertible {
     }
 }
 
-extension GISGeographicLineString2D: PostgreSQLDataTypeStaticRepresentable, ReflectionDecodable {
+extension GeometricLineString2D: PostgreSQLDataTypeStaticRepresentable, ReflectionDecodable {
     
     /// See `PostgreSQLDataTypeStaticRepresentable`.
-    public static var postgreSQLDataType: PostgreSQLDataType { return .geographicLineString }
+    public static var postgreSQLDataType: PostgreSQLDataType { return .geometricLineString }
     
     /// See `ReflectionDecodable`.
-    public static func reflectDecoded() throws -> (GISGeographicLineString2D, GISGeographicLineString2D) {
-        return (.init(points: []), .init(points: [GISGeographicPoint2D(longitude: 0, latitude: 0)]))
+    public static func reflectDecoded() throws -> (GeometricLineString2D, GeometricLineString2D) {
+        return (.init(points: [GeometricPoint2D(x: 0, y: 0)]), .init(points: []))
     }
 }

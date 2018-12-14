@@ -18,8 +18,8 @@ extension QueryBuilder where
     ///     - value: Geometry value to filter by.
     /// - returns: Query builder for chaining.
     @discardableResult
-    public func filterGeometryContains<T>(_ key: KeyPath<Result, T>, _ value: GISGeometry) -> Self
-        where T: GISGeometry
+    public func filterGeometryContains<T>(_ key: KeyPath<Result, T>, _ value: PostGISGeometry) -> Self
+        where T: PostGISGeometry
     {
         return filterGeometryContains(Database.queryField(.keyPath(key)), Database.queryFilterValueGeometry(value))
     }
@@ -35,8 +35,8 @@ extension QueryBuilder where
     ///     - key: Swift `KeyPath` to a field on the model to filter.
     /// - returns: Query builder for chaining.
     @discardableResult
-    public func filterGeometryContains<T>(_ value: GISGeometry, _ key: KeyPath<Result, T>) -> Self
-        where T: GISGeometry
+    public func filterGeometryContains<T>(_ value: PostGISGeometry, _ key: KeyPath<Result, T>) -> Self
+        where T: PostGISGeometry
     {
         return filterGeometryContains(Database.queryFilterValueGeometry(value), Database.queryField(.keyPath(key)))
     }
@@ -73,7 +73,7 @@ extension QueryBuilder where
 }
 
 extension QuerySupporting where
-    QueryFilter: SQLExpression,
+    QueryFilterValue: SQLExpression,
     QueryField == QueryFilter.ColumnIdentifier,
     QueryFilterMethod == QueryFilter.BinaryOperator,
     QueryFilterValue == QueryFilter
@@ -84,7 +84,7 @@ extension QuerySupporting where
     ///     - field: Field to filter.
     ///     - value: Value type.
     public static func queryGeometryContains(_ field: QueryField, _ value: QueryFilterValue) -> QueryFilter {
-        let args: [QueryFilter.Function.Argument] = [
+        let args = [
             GenericSQLFunctionArgument<PostgreSQLExpression>.expression(PostgreSQLExpression.column(field as! PostgreSQLColumnIdentifier)),
             GenericSQLFunctionArgument<PostgreSQLExpression>.expression(value as! PostgreSQLExpression),
             ] as! [QueryFilter.Function.Argument]
@@ -97,7 +97,7 @@ extension QuerySupporting where
     ///     - value: Value type.
     ///     - field: Field to filter.
     public static func queryGeometryContains(_ value: QueryFilterValue, _ field: QueryField) -> QueryFilter {
-        let args: [QueryFilter.Function.Argument] = [
+        let args = [
             GenericSQLFunctionArgument<PostgreSQLExpression>.expression(value as! PostgreSQLExpression), GenericSQLFunctionArgument<PostgreSQLExpression>.expression(PostgreSQLExpression.column(field as! PostgreSQLColumnIdentifier)),
             ] as! [QueryFilter.Function.Argument]
         return .function("ST_Contains", args)

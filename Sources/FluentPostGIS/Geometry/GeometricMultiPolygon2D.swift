@@ -2,17 +2,17 @@ import Foundation
 import PostgreSQL
 import WKCodable
 
-public struct GISGeometricMultiPolygon2D: Codable, Equatable, GISGeometry {
+public struct GeometricMultiPolygon2D: Codable, Equatable, PostGISGeometry {
     /// The points
-    public let polygons: [GISGeometricPolygon2D]
+    public let polygons: [GeometricPolygon2D]
     
     /// Create a new `GISGeometricMultiPolygon2D`
-    public init(polygons: [GISGeometricPolygon2D]) {
+    public init(polygons: [GeometricPolygon2D]) {
         self.polygons = polygons
     }
     
     public init(wkbGeometry polygon: WKBMultiPolygon) {
-        let polygons = polygon.polygons.map { GISGeometricPolygon2D(wkbGeometry: $0) }
+        let polygons = polygon.polygons.map { GeometricPolygon2D(wkbGeometry: $0) }
         self.init(polygons: polygons)
     }
     
@@ -22,14 +22,14 @@ public struct GISGeometricMultiPolygon2D: Codable, Equatable, GISGeometry {
     }
 }
 
-extension GISGeometricMultiPolygon2D: CustomStringConvertible {
+extension GeometricMultiPolygon2D: CustomStringConvertible {
     public var description: String {
         return WKTEncoder().encode(wkbGeometry)
     }
 }
 
-extension GISGeometricMultiPolygon2D: PostgreSQLDataConvertible {
-    public static func convertFromPostgreSQLData(_ data: PostgreSQLData) throws -> GISGeometricMultiPolygon2D {
+extension GeometricMultiPolygon2D: PostgreSQLDataConvertible {
+    public static func convertFromPostgreSQLData(_ data: PostgreSQLData) throws -> GeometricMultiPolygon2D {
         if let value = data.binary {
             let decoder = WKBDecoder()
             let geometry = try decoder.decode(from: value) as! WKBMultiPolygon
@@ -46,14 +46,14 @@ extension GISGeometricMultiPolygon2D: PostgreSQLDataConvertible {
     }
 }
 
-extension GISGeometricMultiPolygon2D: PostgreSQLDataTypeStaticRepresentable, ReflectionDecodable {
+extension GeometricMultiPolygon2D: PostgreSQLDataTypeStaticRepresentable, ReflectionDecodable {
     
     /// See `PostgreSQLDataTypeStaticRepresentable`.
     public static var postgreSQLDataType: PostgreSQLDataType { return .geometricMultiLineString }
     
     /// See `ReflectionDecodable`.
-    public static func reflectDecoded() throws -> (GISGeometricMultiPolygon2D, GISGeometricMultiPolygon2D) {
+    public static func reflectDecoded() throws -> (GeometricMultiPolygon2D, GeometricMultiPolygon2D) {
         return (.init(polygons: []),
-                .init(polygons: [ GISGeometricPolygon2D(exteriorRing: GISGeometricLineString2D(points: [GISGeometricPoint2D(x: 0, y: 0)]))]))
+                .init(polygons: [ GeometricPolygon2D(exteriorRing: GeometricLineString2D(points: [GeometricPoint2D(x: 0, y: 0)]))]))
     }
 }
