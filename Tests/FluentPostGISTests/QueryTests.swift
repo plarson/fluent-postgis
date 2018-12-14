@@ -339,4 +339,70 @@ final class QueryTests: XCTestCase {
         let all = try UserLocation.query(on: conn).filterGeometryIntersects(polygon, \UserLocation.path).all().wait()
         XCTAssertEqual(all.count, 1)
     }
+
+    func testOverlaps() throws {
+        struct UserPath: PostgreSQLModel, Migration {
+            var id: Int?
+            var path: GISGeometricLineString2D
+        }
+        let conn = try benchmarker.pool.requestConnection().wait()
+        conn.logger = DatabaseLogger(database: .psql, handler: PrintLogHandler())
+        defer { benchmarker.pool.releaseConnection(conn) }
+        
+        try UserPath.prepare(on: conn).wait()
+        defer { try! UserPath.revert(on: conn).wait() }
+        
+        let testPath = GISGeometricLineString2D(points: [
+            GISGeometricPoint2D(x: 15, y: 0),
+            GISGeometricPoint2D(x: 5, y: 5),
+            GISGeometricPoint2D(x: 6, y: 6),
+            GISGeometricPoint2D(x: 0, y: 0),
+            ])
+        
+        let testPath2 = GISGeometricLineString2D(points: [
+            GISGeometricPoint2D(x: 16, y: 0),
+            GISGeometricPoint2D(x: 5, y: 5),
+            GISGeometricPoint2D(x: 6, y: 6),
+            GISGeometricPoint2D(x: 2, y: 0),
+            ])
+
+        var user = UserPath(id: nil, path: testPath)
+        user = try user.save(on: conn).wait()
+        
+        let all = try UserPath.query(on: conn).filterGeometryOverlaps(\.path, testPath2).all().wait()
+        XCTAssertEqual(all.count, 1)
+    }
+    
+    func testOverlapsReversed() throws {
+        struct UserPath: PostgreSQLModel, Migration {
+            var id: Int?
+            var path: GISGeometricLineString2D
+        }
+        let conn = try benchmarker.pool.requestConnection().wait()
+        conn.logger = DatabaseLogger(database: .psql, handler: PrintLogHandler())
+        defer { benchmarker.pool.releaseConnection(conn) }
+        
+        try UserPath.prepare(on: conn).wait()
+        defer { try! UserPath.revert(on: conn).wait() }
+        
+        let testPath = GISGeometricLineString2D(points: [
+            GISGeometricPoint2D(x: 15, y: 0),
+            GISGeometricPoint2D(x: 5, y: 5),
+            GISGeometricPoint2D(x: 6, y: 6),
+            GISGeometricPoint2D(x: 0, y: 0),
+            ])
+        
+        let testPath2 = GISGeometricLineString2D(points: [
+            GISGeometricPoint2D(x: 16, y: 0),
+            GISGeometricPoint2D(x: 5, y: 5),
+            GISGeometricPoint2D(x: 6, y: 6),
+            GISGeometricPoint2D(x: 2, y: 0),
+            ])
+        
+        var user = UserPath(id: nil, path: testPath)
+        user = try user.save(on: conn).wait()
+        
+        let all = try UserPath.query(on: conn).filterGeometryOverlaps(testPath2, \.path).all().wait()
+        XCTAssertEqual(all.count, 1)
+    }
 }
