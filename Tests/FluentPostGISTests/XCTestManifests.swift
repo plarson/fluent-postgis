@@ -1,9 +1,7 @@
 import XCTest
 
-extension FluentPostGISTests {
+extension GeometryTests {
     static let __allTests = [
-        ("testContains", testContains),
-        ("testContainsWithHole", testContainsWithHole),
         ("testGeometryCollection", testGeometryCollection),
         ("testLineString", testLineString),
         ("testPoint", testPoint),
@@ -11,10 +9,19 @@ extension FluentPostGISTests {
     ]
 }
 
+extension QueryTests {
+    static let __allTests = [
+        ("testContains", testContains),
+        ("testContainsReversed", testContainsReversed),
+        ("testContainsWithHole", testContainsWithHole),
+    ]
+}
+
 #if !os(macOS)
 public func __allTests() -> [XCTestCaseEntry] {
     return [
-        testCase(FluentPostGISTests.__allTests),
+        testCase(GeometryTests.__allTests),
+        testCase(QueryTests.__allTests),
     ]
 }
 #endif
