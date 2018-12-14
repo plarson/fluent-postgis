@@ -43,10 +43,10 @@ final class User: PostgreSQLModel {
 |GISGeometricGeometryCollection2D|GISGeographicGeometryCollection2D|
 
 # Queries
-Query locations using ```ST_Distance```
+Query locations using ```ST_DWithin```
 ```swift        
 let searchLocation = GISGeographicPoint2D(longitude: -71.060316, latitude: 48.432044)
-try User.query(on: conn).filterGeometryDistance(\User.location, searchLocation, .lessThanOrEqual, 1000).all().wait()
+try User.query(on: conn).filterGeometryDistanceWithin(\User.location, searchLocation, 1000).all().wait()
 ```
 
 | Queries |

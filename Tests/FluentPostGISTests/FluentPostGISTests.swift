@@ -48,7 +48,7 @@ final class FluentPostGISTests: XCTestCase {
         let fetched = try UserLocation.find(1, on: conn).wait()
         XCTAssertEqual(fetched?.location, point)
 
-        let all = try UserLocation.query(on: conn).filterGeometryDistance(\UserLocation.location, user.location, .lessThanOrEqual, 1000).all().wait()
+        let all = try UserLocation.query(on: conn).filterGeometryDistanceWithin(\UserLocation.location, user.location, 1000).all().wait()
         print(all)
         XCTAssertEqual(all.count, 1)
     }
