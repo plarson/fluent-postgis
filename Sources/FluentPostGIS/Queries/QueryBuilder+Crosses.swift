@@ -24,7 +24,7 @@ extension QueryBuilder where
         return filterGeometryCrosses(Database.queryField(.keyPath(key)), Database.queryFilterValueGeometry(filter))
     }
     
-    /// Applies an ST_Contains filter to this query. Usually you will use the filter operators to do this.
+    /// Applies an ST_Crosses filter to this query. Usually you will use the filter operators to do this.
     ///
     ///     let users = try User.query(on: conn)
     ///         .filterGeometryCrosses(area, \.path)
@@ -41,7 +41,7 @@ extension QueryBuilder where
         return filterGeometryCrosses(Database.queryFilterValueGeometry(value), Database.queryField(.keyPath(key)))
     }
     
-    /// Applies an ST_Contains filter to this query. Usually you will use the filter operators to do this.
+    /// Applies an ST_Crosses filter to this query. Usually you will use the filter operators to do this.
     ///
     ///     let users = try User.query(on: conn)
     ///         .filterGeometryCrosses("area", path)
@@ -56,7 +56,7 @@ extension QueryBuilder where
         return self.filter(custom: Database.queryGeometryCrosses(field, value))
     }
     
-    /// Applies an ST_Contains filter to this query. Usually you will use the filter operators to do this.
+    /// Applies an ST_Crosses filter to this query. Usually you will use the filter operators to do this.
     ///
     ///     let users = try User.query(on: conn)
     ///         .filterGeometryCrosses(area, "path")
@@ -69,8 +69,7 @@ extension QueryBuilder where
     @discardableResult
     private func filterGeometryCrosses(_ value: Database.QueryFilterValue, _ field: Database.QueryField) -> Self {
         return self.filter(custom: Database.queryGeometryCrosses(value, field))
-    }
-    
+    }    
 }
 
 extension QuerySupporting where
