@@ -1,5 +1,4 @@
 import FluentPostgreSQL
-import WKCodable
 
 extension QueryBuilder where
     Database: QuerySupporting,
@@ -12,7 +11,7 @@ extension QueryBuilder where
     public func filterGeometryDistance<T>(_ key: KeyPath<Result, T>, _ filter: GISGeometry, _ method: Database.QueryFilterMethod, _ value: Double) -> Self
         where T: GISGeometry
     {
-        return filterGeometryDistance(Database.queryField(.keyPath(key)), Database.queryFilterValueGISGeometry(filter), method, Database.queryFilterValue([value]))
+        return filterGeometryDistance(Database.queryField(.keyPath(key)), Database.queryFilterValueGeometry(filter), method, Database.queryFilterValue([value]))
     }
     
     @discardableResult
@@ -54,12 +53,5 @@ extension QuerySupporting where
             GenericSQLFunctionArgument<PostgreSQLExpression>.expression(filter as! PostgreSQLExpression),
         ] as! [QueryFilter.Function.Argument]
         return .binary(.function("ST_Distance", args), method, value)
-    }
-}
-
-extension QuerySupporting where QueryFilterValue: SQLExpression {
-    public static func queryFilterValueGISGeometry(_ point: GISGeometry) -> QueryFilterValue {
-        let geometryText = WKTEncoder().encode(point.wkbGeometry)
-        return .function("ST_GeomFromEWKT", [.expression(.literal(.string(geometryText)))])
     }
 }

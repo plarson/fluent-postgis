@@ -1,5 +1,4 @@
 import FluentPostgreSQL
-import WKCodable
 
 extension QueryBuilder where
     Database: QuerySupporting,
@@ -12,7 +11,7 @@ extension QueryBuilder where
     public func filterGeometryContains<T>(_ key: KeyPath<Result, T>, _ filter: GISGeometry) -> Self
         where T: GISGeometry
     {
-        return filterGeometryContains(Database.queryField(.keyPath(key)), Database.queryFilterValueGISGeometry(filter))
+        return filterGeometryContains(Database.queryField(.keyPath(key)), Database.queryFilterValueGeometry(filter))
     }
     
     @discardableResult
