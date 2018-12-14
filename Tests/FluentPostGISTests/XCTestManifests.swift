@@ -16,6 +16,17 @@ extension QueryTests {
         ("testContainsWithHole", testContainsWithHole),
         ("testCrosses", testCrosses),
         ("testCrossesReversed", testCrossesReversed),
+        ("testDisjoint", testDisjoint),
+        ("testDisjointReversed", testDisjointReversed),
+        ("testEquals", testEquals),
+        ("testIntersects", testIntersects),
+        ("testIntersectsReversed", testIntersectsReversed),
+        ("testOverlaps", testOverlaps),
+        ("testOverlapsReversed", testOverlapsReversed),
+        ("testTouches", testTouches),
+        ("testTouchesReversed", testTouchesReversed),
+        ("testWithin", testWithin),
+        ("testWithinReversed", testWithinReversed),
     ]
 }
 
