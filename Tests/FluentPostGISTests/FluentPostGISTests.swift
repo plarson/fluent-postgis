@@ -154,6 +154,33 @@ final class FluentPostGISTests: XCTestCase {
         XCTAssertEqual(all.count, 1)
     }
     
+    func testContainsReversed() throws {
+        struct UserLocation: PostgreSQLModel, Migration {
+            var id: Int?
+            var location: GISGeometricPoint2D
+        }
+        let conn = try benchmarker.pool.requestConnection().wait()
+        conn.logger = DatabaseLogger(database: .psql, handler: PrintLogHandler())
+        defer { benchmarker.pool.releaseConnection(conn) }
+        
+        try UserLocation.prepare(on: conn).wait()
+        defer { try! UserLocation.revert(on: conn).wait() }
+        
+        let point = GISGeometricPoint2D(x: 0, y: 0)
+        let point2 = GISGeometricPoint2D(x: 10, y: 0)
+        let point3 = GISGeometricPoint2D(x: 10, y: 10)
+        let point4 = GISGeometricPoint2D(x: 0, y: 10)
+        let lineString = GISGeometricLineString2D(points: [point, point2, point3, point4, point])
+        let polygon = GISGeometricPolygon2D(exteriorRing: lineString)
+        
+        let testPoint = GISGeometricPoint2D(x: 5, y: 5)
+        var user = UserLocation(id: nil, location: testPoint)
+        user = try user.save(on: conn).wait()
+        
+        let all = try UserLocation.query(on: conn).filterGeometryContains(polygon, \UserLocation.location).all().wait()
+        XCTAssertEqual(all.count, 1)
+    }
+    
     func testContainsWithHole() throws {
         struct UserArea: PostgreSQLModel, Migration {
             var id: Int?
