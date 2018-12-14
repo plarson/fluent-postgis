@@ -53,15 +53,13 @@ try User.query(on: conn).filterGeometryDistance(\User.location, searchLocation, 
 |---|
 |filterGeometryContains|
 |filterGeometryCrosses|
+|filterGeometryDisjoint|
 |filterGeometryDistance|
 |filterGeometryEquals|
 |filterGeometryIntersects|
 |filterGeometryOverlaps|
 |filterGeometryTouches|
 |filterGeometryWithin|
-
-# Todo
-* More filtering functions
 
 :gift_heart: Contributing
 ------------
