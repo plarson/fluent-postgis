@@ -46,7 +46,7 @@ final class User: PostgreSQLModel {
 Query locations using ```ST_Distance```
 ```swift        
 let searchLocation = GISGeographicPoint2D(longitude: -71.060316, latitude: 48.432044)
-try User.query(on: conn).filterDistance(\User.location, searchLocation, .lessThanOrEqual, 1000).all().wait()
+try User.query(on: conn).filterGeometryDistance(\User.location, searchLocation, .lessThanOrEqual, 1000).all().wait()
 ```
 
 | Queries |
