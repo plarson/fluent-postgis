@@ -18,8 +18,8 @@ extension QueryBuilder where
     ///     - value: Geometry value to filter by.
     /// - returns: Query builder for chaining.
     @discardableResult
-    public func filterGeometryOverlaps<T>(_ key: KeyPath<Result, T>, _ filter: PostGISGeometry) -> Self
-        where T: PostGISGeometry
+    public func filterGeometryOverlaps<T, V>(_ key: KeyPath<Result, T>, _ filter: V) -> Self
+        where T: WKGeometryConvertible, V: WKGeometryConvertible
     {
         return filterGeometryOverlaps(Database.queryField(.keyPath(key)), Database.queryFilterValueGeometry(filter))
     }
@@ -35,8 +35,8 @@ extension QueryBuilder where
     ///     - key: Swift `KeyPath` to a field on the model to filter.
     /// - returns: Query builder for chaining.
     @discardableResult
-    public func filterGeometryOverlaps<T>(_ value: PostGISGeometry, _ key: KeyPath<Result, T>) -> Self
-        where T: PostGISGeometry
+    public func filterGeometryOverlaps<T, V>(_ value: V, _ key: KeyPath<Result, T>) -> Self
+        where T: WKGeometryConvertible, V: WKGeometryConvertible
     {
         return filterGeometryOverlaps(Database.queryFilterValueGeometry(value), Database.queryField(.keyPath(key)))
     }

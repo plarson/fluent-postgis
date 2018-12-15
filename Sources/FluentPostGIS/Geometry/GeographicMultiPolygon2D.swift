@@ -2,7 +2,7 @@ import Foundation
 import PostgreSQL
 import WKCodable
 
-public struct GeographicMultiPolygon2D: Codable, Equatable, PostGISGeometry {
+public struct GeographicMultiPolygon2D: Codable, Equatable, CustomStringConvertible, PostgreSQLDataConvertible  {
     /// The points
     public let polygons: [GeographicPolygon2D]
     
@@ -10,39 +10,20 @@ public struct GeographicMultiPolygon2D: Codable, Equatable, PostGISGeometry {
     public init(polygons: [GeographicPolygon2D]) {
         self.polygons = polygons
     }
+}
+
+extension GeographicMultiPolygon2D: WKGeometryConvertible {
+    /// Convertible type
+    public typealias GeometryType = MultiPolygon
     
-    public init(wkbGeometry polygon: WKBMultiPolygon) {
-        let polygons = polygon.polygons.map { GeographicPolygon2D(wkbGeometry: $0) }
+    public init(geometry polygon: GeometryType) {
+        let polygons = polygon.polygons.map { GeographicPolygon2D(geometry: $0) }
         self.init(polygons: polygons)
     }
     
-    public var wkbGeometry: WKBGeometry {
-        let polygons = self.polygons.map { $0.wkbGeometry as! WKBPolygon }
-        return WKBMultiPolygon(polygons: polygons, srid: FluentPostGISSrid)
-    }
-}
-
-extension GeographicMultiPolygon2D: CustomStringConvertible {
-    public var description: String {
-        return WKTEncoder().encode(wkbGeometry)
-    }
-}
-
-extension GeographicMultiPolygon2D: PostgreSQLDataConvertible {
-    public static func convertFromPostgreSQLData(_ data: PostgreSQLData) throws -> GeographicMultiPolygon2D {
-        if let value = data.binary {
-            let decoder = WKBDecoder()
-            let geometry = try decoder.decode(from: value) as! WKBMultiPolygon
-            return self.init(wkbGeometry: geometry)
-        } else {
-            throw PostGISError.decode(self, from: data)
-        }
-    }
-    
-    public func convertToPostgreSQLData() throws -> PostgreSQLData {
-        let encoder = WKBEncoder(byteOrder: .littleEndian)
-        let data = encoder.encode(wkbGeometry)
-        return PostgreSQLData(.geometry, binary: data)
+    public var geometry: GeometryType {
+        let polygons = self.polygons.map { $0.geometry }
+        return .init(polygons: polygons, srid: FluentPostGISSrid)
     }
 }
 

@@ -100,29 +100,29 @@ final class GeometryTests: XCTestCase {
         XCTAssertEqual(fetched?.area, polygon)
     }
 
-    func testGeometryCollection() throws {
-        struct UserCollection: PostgreSQLModel, Migration {
-            var id: Int?
-            var collection: GeometricGeometryCollection2D
-        }
-        let conn = try benchmarker.pool.requestConnection().wait()
-        conn.logger = DatabaseLogger(database: .psql, handler: PrintLogHandler())
-        defer { benchmarker.pool.releaseConnection(conn) }
-
-        try UserCollection.prepare(on: conn).wait()
-        defer { try! UserCollection.revert(on: conn).wait() }
-
-        let point = GeometricPoint2D(x: 1, y: 2)
-        let point2 = GeometricPoint2D(x: 2, y: 3)
-        let point3 = GeometricPoint2D(x: 3, y: 2)
-        let lineString = GeometricLineString2D(points: [point, point2, point3, point])
-        let polygon = GeometricPolygon2D(exteriorRing: lineString, interiorRings: [lineString, lineString])
-        let geometryCollection = GeometricGeometryCollection2D(geometries: [point, point2, point3, lineString, polygon])
-
-        var user = UserCollection(id: nil, collection: geometryCollection)
-        user = try user.save(on: conn).wait()
-
-        let fetched = try UserCollection.find(1, on: conn).wait()
-        XCTAssertEqual(fetched?.collection, geometryCollection)
-    }
+//    func testGeometryCollection() throws {
+//        struct UserCollection: PostgreSQLModel, Migration {
+//            var id: Int?
+//            var collection: GeometricGeometryCollection2D
+//        }
+//        let conn = try benchmarker.pool.requestConnection().wait()
+//        conn.logger = DatabaseLogger(database: .psql, handler: PrintLogHandler())
+//        defer { benchmarker.pool.releaseConnection(conn) }
+//
+//        try UserCollection.prepare(on: conn).wait()
+//        defer { try! UserCollection.revert(on: conn).wait() }
+//
+//        let point = GeometricPoint2D(x: 1, y: 2)
+//        let point2 = GeometricPoint2D(x: 2, y: 3)
+//        let point3 = GeometricPoint2D(x: 3, y: 2)
+//        let lineString = GeometricLineString2D(points: [point, point2, point3, point])
+//        let polygon = GeometricPolygon2D(exteriorRing: lineString, interiorRings: [lineString, lineString])
+//        let geometryCollection = GeometricGeometryCollection2D(geometries: [point, point2, point3, lineString, polygon])
+//
+//        var user = UserCollection(id: nil, collection: geometryCollection)
+//        user = try user.save(on: conn).wait()
+//
+//        let fetched = try UserCollection.find(1, on: conn).wait()
+//        XCTAssertEqual(fetched?.collection, geometryCollection)
+//    }
 }

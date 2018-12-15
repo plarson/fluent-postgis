@@ -2,7 +2,7 @@ import Foundation
 import PostgreSQL
 import WKCodable
 
-public struct GeographicMultiLineString2D: Codable, Equatable, PostGISGeometry {
+public struct GeographicMultiLineString2D: Codable, Equatable, CustomStringConvertible, PostgreSQLDataConvertible {
     /// The points
     public let lineStrings: [GeographicLineString2D]
     
@@ -10,39 +10,20 @@ public struct GeographicMultiLineString2D: Codable, Equatable, PostGISGeometry {
     public init(lineStrings: [GeographicLineString2D]) {
         self.lineStrings = lineStrings
     }
+}
+
+extension GeographicMultiLineString2D: WKGeometryConvertible {
+    /// Convertible type
+    public typealias GeometryType = MultiLineString
     
-    public init(wkbGeometry polygon: WKBMultiLineString) {
-        let lineStrings = polygon.lineStrings.map { GeographicLineString2D(wkbGeometry: $0) }
+    public init(geometry polygon: GeometryType) {
+        let lineStrings = polygon.lineStrings.map { GeographicLineString2D(geometry: $0) }
         self.init(lineStrings: lineStrings)
     }
     
-    public var wkbGeometry: WKBGeometry {
-        let lineStrings = self.lineStrings.map { $0.wkbGeometry as! WKBLineString }
-        return WKBMultiLineString(lineStrings: lineStrings, srid: FluentPostGISSrid)
-    }
-}
-
-extension GeographicMultiLineString2D: CustomStringConvertible {
-    public var description: String {
-        return WKTEncoder().encode(wkbGeometry)
-    }
-}
-
-extension GeographicMultiLineString2D: PostgreSQLDataConvertible {
-    public static func convertFromPostgreSQLData(_ data: PostgreSQLData) throws -> GeographicMultiLineString2D {
-        if let value = data.binary {
-            let decoder = WKBDecoder()
-            let geometry = try decoder.decode(from: value) as! WKBMultiLineString
-            return self.init(wkbGeometry: geometry)
-        } else {
-            throw PostGISError.decode(self, from: data)
-        }
-    }
-    
-    public func convertToPostgreSQLData() throws -> PostgreSQLData {
-        let encoder = WKBEncoder(byteOrder: .littleEndian)
-        let data = encoder.encode(wkbGeometry)
-        return PostgreSQLData(.geometry, binary: data)
+    public var geometry: GeometryType {
+        let lineStrings = self.lineStrings.map { $0.geometry }
+        return .init(lineStrings: lineStrings, srid: FluentPostGISSrid)
     }
 }
 

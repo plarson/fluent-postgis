@@ -2,53 +2,58 @@ import Foundation
 import PostgreSQL
 import WKCodable
 
-public struct GeographicGeometryCollection2D: Codable, Equatable, PostGISGeometry {
+public struct GeographicGeometryCollection2D: Codable, Equatable, CustomStringConvertible, PostgreSQLDataConvertible  {
    
     /// The points
-    public let geometries: [PostGISGeometry]
-    
+    public let geometries: [AnyGeometryConvertible]
+
     /// Create a new `GISGeographicGeometryCollection2D`
-    public init(geometries: [PostGISGeometry]) {
+    public init(geometries: [AnyGeometryConvertible]) {
         self.geometries = geometries
     }
+}
+
+extension GeographicGeometryCollection2D: WKGeometryConvertible {
+    /// Convertible type
+    public typealias GeometryType = GeometryCollection
     
-    public init(wkbGeometry: WKBGeometryCollection) {
-        geometries = wkbGeometry.geometries.map {
-            if let value = $0 as? WKBPoint {
-                return GeographicPoint2D(wkbGeometry: value)
-            } else if let value = $0 as? WKBLineString {
-                return GeographicLineString2D(wkbGeometry: value)
-            } else if let value = $0 as? WKBPolygon {
-                return GeographicPolygon2D(wkbGeometry: value)
-            } else if let value = $0 as? WKBMultiPoint {
-                return GeographicMultiPoint2D(wkbGeometry: value)
-            } else if let value = $0 as? WKBMultiLineString {
-                return GeographicMultiLineString2D(wkbGeometry: value)
-            } else if let value = $0 as? WKBMultiPolygon {
-                return GeographicMultiPolygon2D(wkbGeometry: value)
-            } else if let value = $0 as? WKBGeometryCollection {
-                return GeographicGeometryCollection2D(wkbGeometry: value)
+    public init(geometry: GeometryCollection) {
+        geometries = geometry.geometries.map {
+            if let value = $0 as? Point {
+                return AnyGeometryConvertible(GeographicPoint2D(geometry: value))
+            } else if let value = $0 as? LineString {
+                return AnyGeometryConvertible(GeographicLineString2D(geometry: value))
+            } else if let value = $0 as? WKCodable.Polygon {
+                return AnyGeometryConvertible(GeographicPolygon2D(geometry: value))
+            } else if let value = $0 as? MultiPoint {
+                return AnyGeometryConvertible(GeographicMultiPoint2D(geometry: value))
+            } else if let value = $0 as? MultiLineString {
+                return AnyGeometryConvertible(GeographicMultiLineString2D(geometry: value))
+            } else if let value = $0 as? MultiPolygon {
+                return AnyGeometryConvertible(GeographicMultiPolygon2D(geometry: value))
+            } else if let value = $0 as? GeometryCollection {
+                return AnyGeometryConvertible(GeographicGeometryCollection2D(geometry: value))
             } else {
                 assertionFailure()
-                return GeographicPoint2D(longitude: 0, latitude: 0)
+                return AnyGeometryConvertible(GeographicPoint2D(longitude: 0, latitude: 0))
             }
         }
     }
     
-    public var wkbGeometry: WKBGeometry {
+    public var geometry: GeometryCollection {
         let geometries = self.geometries.map { $0.wkbGeometry }
-        return WKBGeometryCollection(geometries: geometries, srid: FluentPostGISSrid)
+        return .init(geometries: geometries, srid: FluentPostGISSrid)
     }
     
     public init(from decoder: Decoder) throws {
         let value = try decoder.singleValueContainer().decode(String.self)
-        let wkbGeometry = try WKTDecoder().decode(from: value) as! WKBGeometryCollection
-        self.init(wkbGeometry: wkbGeometry)
+        let wkbGeometry: GeometryCollection = try WKTDecoder().decode(from: value)
+        self.init(geometry: wkbGeometry)
     }
     
     public func encode(to encoder: Encoder) throws {
         let wktEncoder = WKTEncoder()
-        let value = wktEncoder.encode(wkbGeometry)
+        let value = wktEncoder.encode(geometry)
         var container = encoder.singleValueContainer()
         try container.encode(value)
     }
@@ -66,30 +71,6 @@ public struct GeographicGeometryCollection2D: Codable, Equatable, PostGISGeometr
     }
 }
 
-extension GeographicGeometryCollection2D: CustomStringConvertible {
-    public var description: String {
-        return WKTEncoder().encode(wkbGeometry)
-    }
-}
-
-extension GeographicGeometryCollection2D: PostgreSQLDataConvertible {
-    public static func convertFromPostgreSQLData(_ data: PostgreSQLData) throws -> GeographicGeometryCollection2D {
-        if let value = data.binary {
-            let decoder = WKBDecoder()
-            let geometry = try decoder.decode(from: value) as! WKBGeometryCollection
-            return .init(wkbGeometry: geometry)
-        } else {
-            throw PostGISError.decode(self, from: data)
-        }
-    }
-    
-    public func convertToPostgreSQLData() throws -> PostgreSQLData {
-        let encoder = WKBEncoder(byteOrder: .littleEndian)
-        let data = encoder.encode(wkbGeometry)
-        return PostgreSQLData(.geometry, binary: data)
-    }
-}
-
 extension GeographicGeometryCollection2D: PostgreSQLDataTypeStaticRepresentable, ReflectionDecodable {
     
     /// See `PostgreSQLDataTypeStaticRepresentable`.
@@ -98,6 +79,6 @@ extension GeographicGeometryCollection2D: PostgreSQLDataTypeStaticRepresentable,
     /// See `ReflectionDecodable`.
     public static func reflectDecoded() throws -> (GeographicGeometryCollection2D, GeographicGeometryCollection2D) {
         return (.init(geometries: []),
-                .init(geometries: [ GeographicPolygon2D(exteriorRing: GeographicLineString2D(points: [GeographicPoint2D(longitude: 0, latitude: 0)]))]))
+                .init(geometries: [ AnyGeometryConvertible(GeographicPolygon2D(exteriorRing: GeographicLineString2D(points: [GeographicPoint2D(longitude: 0, latitude: 0)])))]))
     }
 }

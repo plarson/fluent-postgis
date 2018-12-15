@@ -2,7 +2,7 @@ import XCTest
 
 extension GeometryTests {
     static let __allTests = [
-        ("testGeometryCollection", testGeometryCollection),
+//        ("testGeometryCollection", testGeometryCollection),
         ("testLineString", testLineString),
         ("testPoint", testPoint),
         ("testPolygon", testPolygon),
