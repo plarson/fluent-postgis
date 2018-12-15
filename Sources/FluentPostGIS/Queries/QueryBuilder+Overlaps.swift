@@ -19,7 +19,7 @@ extension QueryBuilder where
     /// - returns: Query builder for chaining.
     @discardableResult
     public func filterGeometryOverlaps<T, V>(_ key: KeyPath<Result, T>, _ filter: V) -> Self
-        where T: WKGeometryConvertible, V: WKGeometryConvertible
+        where T: GeometryConvertible, V: GeometryConvertible
     {
         return filterGeometryOverlaps(Database.queryField(.keyPath(key)), Database.queryFilterValueGeometry(filter))
     }
@@ -36,7 +36,7 @@ extension QueryBuilder where
     /// - returns: Query builder for chaining.
     @discardableResult
     public func filterGeometryOverlaps<T, V>(_ value: V, _ key: KeyPath<Result, T>) -> Self
-        where T: WKGeometryConvertible, V: WKGeometryConvertible
+        where T: GeometryConvertible, V: GeometryConvertible
     {
         return filterGeometryOverlaps(Database.queryFilterValueGeometry(value), Database.queryField(.keyPath(key)))
     }

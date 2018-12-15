@@ -16,7 +16,7 @@ public struct GeometricPoint2D: Codable, Equatable, CustomStringConvertible, Pos
     }
 }
 
-extension GeometricPoint2D: WKGeometryConvertible {
+extension GeometricPoint2D: GeometryConvertible {
     /// Convertible type
     public typealias GeometryType = Point
 

@@ -13,7 +13,7 @@ public struct GeometricLineString2D: Codable, Equatable, CustomStringConvertible
     
 }
 
-extension GeometricLineString2D: WKGeometryConvertible {
+extension GeometricLineString2D: GeometryConvertible {
     /// Convertible type
     public typealias GeometryType = LineString
     

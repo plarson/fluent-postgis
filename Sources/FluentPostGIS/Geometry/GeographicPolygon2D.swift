@@ -18,7 +18,7 @@ public struct GeographicPolygon2D: Codable, Equatable, CustomStringConvertible, 
     }
 }
 
-extension GeographicPolygon2D: WKGeometryConvertible {
+extension GeographicPolygon2D: GeometryConvertible {
     /// Convertible type
     public typealias GeometryType = WKCodable.Polygon
     

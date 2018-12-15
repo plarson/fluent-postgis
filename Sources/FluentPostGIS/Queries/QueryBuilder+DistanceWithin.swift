@@ -9,21 +9,21 @@ extension QueryBuilder where
 {
     @discardableResult
     public func filterGeometryDistanceWithin<T,V>(_ key: KeyPath<Result, T>, _ filter: V, _ value: Double) -> Self
-        where T: WKGeometryConvertible, V: WKGeometryConvertible
+        where T: GeometryConvertible, V: GeometryConvertible
     {
         return filterGeometryDistanceWithin(Database.queryField(.keyPath(key)), Database.queryFilterValueGeometry(filter),  Database.queryFilterValue([value]))
     }
     
     @discardableResult
     public func filterGeometryDistanceWithin<T>(_ key: KeyPath<Result, T>, _ filter: Database.QueryFilterValue, _ value: Double) -> Self
-        where T: WKGeometryConvertible
+        where T: GeometryConvertible
     {
         return filterGeometryDistanceWithin(Database.queryField(.keyPath(key)), filter, Database.queryFilterValue([value]))
     }
     
     @discardableResult
     public func filterGeometryDistanceWithin<A, T>(_ key: KeyPath<A, T>, _ filter: Database.QueryFilterValue, _ value: Double) -> Self
-        where T: WKGeometryConvertible
+        where T: GeometryConvertible
     {
         return filterGeometryDistanceWithin(Database.queryField(.keyPath(key)), filter, Database.queryFilterValue([value]))
     }

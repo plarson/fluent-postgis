@@ -12,7 +12,7 @@ public struct GeographicMultiPoint2D: Codable, Equatable, CustomStringConvertibl
     }
 }
 
-extension GeographicMultiPoint2D: WKGeometryConvertible {
+extension GeographicMultiPoint2D: GeometryConvertible {
     /// Convertible type
     public typealias GeometryType = MultiPoint
     

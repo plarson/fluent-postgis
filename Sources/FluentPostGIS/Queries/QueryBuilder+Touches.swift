@@ -19,7 +19,7 @@ extension QueryBuilder where
     /// - returns: Query builder for chaining.
     @discardableResult
     public func filterGeometryTouches<T, K>(_ key: KeyPath<Result, T>, _ filter: K) -> Self
-        where T: WKGeometryConvertible, K: WKGeometryConvertible
+        where T: GeometryConvertible, K: GeometryConvertible
     {
         return filterGeometryTouches(Database.queryField(.keyPath(key)), Database.queryFilterValueGeometry(filter))
     }
@@ -36,7 +36,7 @@ extension QueryBuilder where
     /// - returns: Query builder for chaining.
     @discardableResult
     public func filterGeometryTouches<T,V>(_ value: V, _ key: KeyPath<Result, T>) -> Self
-        where T: WKGeometryConvertible, V: WKGeometryConvertible
+        where T: GeometryConvertible, V: GeometryConvertible
     {
         return filterGeometryTouches(Database.queryFilterValueGeometry(value), Database.queryField(.keyPath(key)))
     }

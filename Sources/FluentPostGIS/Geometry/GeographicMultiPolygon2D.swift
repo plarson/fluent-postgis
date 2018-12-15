@@ -12,7 +12,7 @@ public struct GeographicMultiPolygon2D: Codable, Equatable, CustomStringConverti
     }
 }
 
-extension GeographicMultiPolygon2D: WKGeometryConvertible {
+extension GeographicMultiPolygon2D: GeometryConvertible {
     /// Convertible type
     public typealias GeometryType = MultiPolygon
     

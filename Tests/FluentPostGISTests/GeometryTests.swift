@@ -117,7 +117,8 @@ final class GeometryTests: XCTestCase {
 //        let point3 = GeometricPoint2D(x: 3, y: 2)
 //        let lineString = GeometricLineString2D(points: [point, point2, point3, point])
 //        let polygon = GeometricPolygon2D(exteriorRing: lineString, interiorRings: [lineString, lineString])
-//        let geometryCollection = GeometricGeometryCollection2D(geometries: [point, point2, point3, lineString, polygon])
+//        let geometry: [Any] = [point, point2, point3, lineString, polygon]
+//        let geometryCollection = GeometricGeometryCollection2D(geometries: geometry)
 //
 //        var user = UserCollection(id: nil, collection: geometryCollection)
 //        user = try user.save(on: conn).wait()

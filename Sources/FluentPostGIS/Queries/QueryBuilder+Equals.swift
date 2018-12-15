@@ -19,7 +19,7 @@ extension QueryBuilder where
     /// - returns: Query builder for chaining.
     @discardableResult
     public func filterGeometryEquals<T, V>(_ key: KeyPath<Result, T>, _ filter: V) -> Self
-        where T: WKGeometryConvertible, V: WKGeometryConvertible
+        where T: GeometryConvertible, V: GeometryConvertible
     {
         return filterGeometryEquals(Database.queryField(.keyPath(key)), Database.queryFilterValueGeometry(filter))
     }

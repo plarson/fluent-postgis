@@ -1,28 +1,27 @@
 import WKCodable
 import PostgreSQL
 
-public protocol WKGeometryConvertible {
+public protocol GeometryConvertible {
     associatedtype GeometryType: Geometry
     init(geometry: GeometryType)
     var geometry: GeometryType { get }
     func isEqual(to other: Any?) -> Bool
-
 }
 
-extension WKGeometryConvertible where Self: Equatable {
+extension GeometryConvertible where Self: Equatable {
     public func isEqual(to other: Any?) -> Bool {
         guard let other = other as? Self else { return false }
         return self == other
     }
 }
 
-extension WKGeometryConvertible where Self: CustomStringConvertible {
+extension GeometryConvertible where Self: CustomStringConvertible {
     public var description: String {
         return WKTEncoder().encode(geometry)
     }
 }
 
-extension WKGeometryConvertible where Self: Codable {
+extension GeometryConvertible where Self: Codable {
     public static func convertFromPostgreSQLData(_ data: PostgreSQLData) throws -> Self {
         if let value = data.binary {
             let decoder = WKBDecoder()
@@ -38,19 +37,4 @@ extension WKGeometryConvertible where Self: Codable {
         let data = encoder.encode(geometry)
         return PostgreSQLData(.geometry, binary: data)
     }
-}
-
-public struct AnyGeometryConvertible {
-    public typealias WKType = Geometry
-    
-    init<T: WKGeometryConvertible>(_ base: T) {
-        self.wkbGeometry = base.geometry
-    }
-
-    func isEqual(to other: Any?) -> Bool {
-        guard let other = other as? AnyGeometryConvertible else { return false }
-        return wkbGeometry.isEqual(to: other.wkbGeometry)
-    }
-
-    let wkbGeometry: Geometry
 }

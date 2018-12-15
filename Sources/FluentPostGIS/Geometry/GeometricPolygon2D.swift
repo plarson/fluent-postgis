@@ -19,7 +19,7 @@ public struct GeometricPolygon2D: Codable, Equatable, CustomStringConvertible, P
     
 }
 
-extension GeometricPolygon2D: WKGeometryConvertible {
+extension GeometricPolygon2D: GeometryConvertible {
     
     /// Convertible type
     public typealias GeometryType = WKCodable.Polygon

@@ -13,7 +13,7 @@ public struct GeometricMultiPoint2D: Codable, Equatable, CustomStringConvertible
     
 }
 
-extension GeometricMultiPoint2D: WKGeometryConvertible {
+extension GeometricMultiPoint2D: GeometryConvertible {
     /// Convertible type
     public typealias GeometryType = MultiPoint
     
