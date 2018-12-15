@@ -16,7 +16,7 @@ public struct GeometricPoint2D: Codable, Equatable, CustomStringConvertible, Pos
     }
 }
 
-extension GeometricPoint2D: GeometryConvertible {
+extension GeometricPoint2D: GeometryConvertible, GeometryCollectable {
     /// Convertible type
     public typealias GeometryType = Point
 
@@ -26,6 +26,10 @@ extension GeometricPoint2D: GeometryConvertible {
     
     public var geometry: GeometryType {
         return .init(vector: [self.x, self.y], srid: FluentPostGISSrid)
+    }
+    
+    public var baseGeometry: Geometry {
+        return self.geometry
     }
 }
 

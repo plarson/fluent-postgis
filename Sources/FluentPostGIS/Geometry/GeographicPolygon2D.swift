@@ -18,7 +18,7 @@ public struct GeographicPolygon2D: Codable, Equatable, CustomStringConvertible, 
     }
 }
 
-extension GeographicPolygon2D: GeometryConvertible {
+extension GeographicPolygon2D: GeometryConvertible, GeometryCollectable {
     /// Convertible type
     public typealias GeometryType = WKCodable.Polygon
     
@@ -32,6 +32,10 @@ extension GeographicPolygon2D: GeometryConvertible {
         let exteriorRing = self.exteriorRing.geometry
         let interiorRings = self.interiorRings.map { $0.geometry }
         return .init(exteriorRing: exteriorRing, interiorRings: interiorRings, srid: FluentPostGISSrid)
+    }
+    
+    public var baseGeometry: Geometry {
+        return self.geometry
     }
 }
 

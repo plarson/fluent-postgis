@@ -12,7 +12,7 @@ public struct GeographicLineString2D: Codable, Equatable, CustomStringConvertibl
     }
 }
 
-extension GeographicLineString2D: GeometryConvertible {
+extension GeographicLineString2D: GeometryConvertible, GeometryCollectable {
     /// Convertible type
     public typealias GeometryType = LineString
     
@@ -23,6 +23,10 @@ extension GeographicLineString2D: GeometryConvertible {
     
     public var geometry: GeometryType {
         return .init(points: self.points.map { $0.geometry }, srid: FluentPostGISSrid)
+    }
+    
+    public var baseGeometry: Geometry {
+        return self.geometry
     }
 }
 

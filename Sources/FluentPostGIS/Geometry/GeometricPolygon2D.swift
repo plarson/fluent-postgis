@@ -19,7 +19,7 @@ public struct GeometricPolygon2D: Codable, Equatable, CustomStringConvertible, P
     
 }
 
-extension GeometricPolygon2D: GeometryConvertible {
+extension GeometricPolygon2D: GeometryConvertible, GeometryCollectable {
     
     /// Convertible type
     public typealias GeometryType = WKCodable.Polygon
@@ -34,6 +34,10 @@ extension GeometricPolygon2D: GeometryConvertible {
         let exteriorRing = self.exteriorRing.geometry
         let interiorRings = self.interiorRings.map { $0.geometry }
         return .init(exteriorRing: exteriorRing, interiorRings: interiorRings, srid: FluentPostGISSrid)
+    }
+    
+    public var baseGeometry: Geometry {
+        return self.geometry
     }
 }
 

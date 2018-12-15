@@ -1,14 +1,18 @@
 import WKCodable
 import PostgreSQL
 
+public protocol GeometryCollectable {
+    var baseGeometry: Geometry { get }
+    func isEqual(to other: Any?) -> Bool
+}
+
 public protocol GeometryConvertible {
     associatedtype GeometryType: Geometry
     init(geometry: GeometryType)
     var geometry: GeometryType { get }
-    func isEqual(to other: Any?) -> Bool
 }
 
-extension GeometryConvertible where Self: Equatable {
+extension GeometryCollectable where Self: Equatable {
     public func isEqual(to other: Any?) -> Bool {
         guard let other = other as? Self else { return false }
         return self == other

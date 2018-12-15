@@ -16,7 +16,7 @@ public struct GeographicPoint2D: Codable, Equatable, CustomStringConvertible, Po
     }
 }
 
-extension GeographicPoint2D: GeometryConvertible {
+extension GeographicPoint2D: GeometryConvertible, GeometryCollectable {
     /// Convertible type
     public typealias GeometryType = Point
 
@@ -26,6 +26,10 @@ extension GeographicPoint2D: GeometryConvertible {
     
     public var geometry: GeometryType {
         return .init(vector: [self.longitude, self.latitude], srid: FluentPostGISSrid)
+    }
+    
+    public var baseGeometry: Geometry {
+        return self.geometry
     }
 }
 

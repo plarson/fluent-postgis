@@ -12,7 +12,7 @@ public struct GeographicMultiPolygon2D: Codable, Equatable, CustomStringConverti
     }
 }
 
-extension GeographicMultiPolygon2D: GeometryConvertible {
+extension GeographicMultiPolygon2D: GeometryConvertible, GeometryCollectable {
     /// Convertible type
     public typealias GeometryType = MultiPolygon
     
@@ -24,6 +24,10 @@ extension GeographicMultiPolygon2D: GeometryConvertible {
     public var geometry: GeometryType {
         let polygons = self.polygons.map { $0.geometry }
         return .init(polygons: polygons, srid: FluentPostGISSrid)
+    }
+    
+    public var baseGeometry: Geometry {
+        return self.geometry
     }
 }
 

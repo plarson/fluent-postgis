@@ -12,7 +12,7 @@ public struct GeographicMultiPoint2D: Codable, Equatable, CustomStringConvertibl
     }
 }
 
-extension GeographicMultiPoint2D: GeometryConvertible {
+extension GeographicMultiPoint2D: GeometryConvertible, GeometryCollectable {
     /// Convertible type
     public typealias GeometryType = MultiPoint
     
@@ -23,6 +23,10 @@ extension GeographicMultiPoint2D: GeometryConvertible {
     
     public var geometry: GeometryType {
         return .init(points: self.points.map { $0.geometry }, srid: FluentPostGISSrid)
+    }
+    
+    public var baseGeometry: Geometry {
+        return self.geometry
     }
 }
 
